@@ -20,7 +20,7 @@ const schema = yup.object().shape({
 
   bintype: yup.string().required("Bin Type is required"),
   capacity: yup.string().required("Capacity is required"),
-  filled:yup.string().required("Filled is required")
+  
   
   
 });
@@ -105,7 +105,7 @@ const EditBins = ({ onclose,item  }) => {
         ward: item.ward,
         bintype: item.bintype,
         capacity: item.capacity,
-        filled: item.filled,
+        
       });
     }
   }, [item, reset]);
@@ -154,15 +154,7 @@ const EditBins = ({ onclose,item  }) => {
                   errors={errors}
                   
                 />
-                <InputField
-                  label="Filled"
-                  name="filled"
-                  register={register}
-                  errors={errors}
-                  placeholder="Type Here"
-                  
-                 
-                />
+                
 
                 
                 

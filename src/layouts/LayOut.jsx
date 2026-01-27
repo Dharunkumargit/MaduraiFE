@@ -11,27 +11,46 @@ import { HiOutlineTrash } from "react-icons/hi";
 import { MdOutlineNotificationAdd } from "react-icons/md";
 
 const LayOut = () => {
-    const location = useLocation();
+  const location = useLocation();
+  
+  // ✅ NEW: Read YOUR exact localStorage structure
+  const userData = JSON.parse(localStorage.getItem('user') || '{}');
+  
+  // ✅ NEW: RBAC Logic - uses your role.accessLevels
+  const hasAccess = (featureName) => {
+    if (!userData?.role?.accessLevels) return true; // Fallback show all
+    
+    const feature = userData.role.accessLevels.find(f => 
+      f.feature === featureName ||
+      f.feature.toLowerCase() === featureName.toLowerCase()
+    );
+    return feature?.permissions?.length > 0;
+  };
+
   const Menus = [
     {
       title: "Dashboard",
       icon: <RiDashboardLine size={25} />,
       to: "/dashboard",
+      feature: "Dashboard" // ✅ NEW: For RBAC
     },
     {
       title: "Bins",
-      icon: <HiOutlineTrash  size={25} />,
+      icon: <HiOutlineTrash size={25} />,
       to: "/bins",
+      feature: "Bins"
     },
     {
       title: "Escalation",
-      icon: <MdOutlineNotificationAdd  size={25} />,
+      icon: <MdOutlineNotificationAdd size={25} />,
       to: "/escalation",
+      feature: "Escalation"
     },
     {
       title: "Locality",
       icon: <LuLayoutDashboard size={25} />,
       to: "/locality/zone",
+      feature: "Locality",
       nested: [
         {
           title: "Zone",
@@ -43,51 +62,47 @@ const LayOut = () => {
           icon: <RiUserAddLine size={23} />,
           to: "/locality/ward",
         },
-    ]
+      ]
     },
-
     {
       title: "Reports",
       icon: <TbReportAnalytics size={25} />,
       to: "/reports/zonewisereport",
+      feature: "Reports",
       nested: [
         {
           title: "Zone-wise Report",
-          
           to: "/reports/zonewisereport",
         },
         {
           title: "Ward-wise Report",
-          
           to: "/reports/wardwisereport",
         },
         {
           title: "Bin-wise Report",
-          
           to: "/reports/binwisereport",
         },
         {
           title: "Employee-wise Report",
-          
           to: "/reports/employeewisereport",
         },
-        {
-          title: "Escalation Report",
-          
-          to: "/reports/escalationreport",
-        },
-    ]
+        // {
+        //   title: "Escalation Report",
+        //   to: "/reports/escalationreport",
+        // },
+      ]
     },
     {
       title: "Employee Management",
       icon: <LuContact size={25} />,
       to: "/employeemanagement",
+      feature: "EmployeeManagement"
     },
-
     {
       title: "Settings",
       icon: <Settings size={25} />,
       to: "/settings/users",
+      feature: "Settings",
       nested: [
         {
           title: "User",
@@ -101,8 +116,9 @@ const LayOut = () => {
         },
       ],
     },
-  ];
+  ].filter(menu => hasAccess(menu.feature)); // ✅ NEW: Filter by checkboxes
 
+  // ✅ OLD: Your exact functions (unchanged)
   const isMenuActive = (menu) => {
     if (location.pathname.startsWith(menu.to)) {
       return true;
@@ -117,68 +133,66 @@ const LayOut = () => {
   };
 
   const isMenuActives = (menu) => {
-      if (location.pathname.startsWith(menu.to)) {
-        return true;
-      }
-      if (
-        menu.nested &&
-        menu.nested.some((item) => location.pathname.startsWith(item.to))
-      ) {
-        return true;
-      }
-      return false;
-    };
+    if (location.pathname.startsWith(menu.to)) {
+      return true;
+    }
+    if (
+      menu.nested &&
+      menu.nested.some((item) => location.pathname.startsWith(item.to))
+    ) {
+      return true;
+    }
+    return false;
+  };
+
+  // ✅ NEW: Nested sidebar visibility (your logic + RBAC)
+  const isNestedSidebarVisible = (menuTitle, pathname) => {
+    if (menuTitle === "Bins") {
+      return (
+        pathname.startsWith("/bins/") && pathname !== "/bins"
+      );
+    }
+    if (menuTitle === "Escalation") {
+      return pathname.startsWith("/escalation/") && pathname !== "/escalation";
+    }
+    if (menuTitle === "Employee Management") {
+      return pathname.startsWith("/employeemanagement/") && pathname !== "/employeemanagement";
+    }
+    return pathname.startsWith(`/${menuTitle.toLowerCase()}`);
+  };
+
   return (
     <div className=" font-roboto-flex w-full fixed h-screen ">
       <NavBar />
       <div className="flex bg-light-blue h-11/12 ">
-      <div className="px-6 pb-10 bg-light-blue overflow-auto no-scrollbar ">
-            <ul>
-              {Menus.map((menu, index) => (
-                <React.Fragment key={index}>
-                  <NavLink to={menu.to}>
-                    <li
-                      className={`w-[84px] text-sm font-extralight flex flex-col items-center text-center p-3 my-4  rounded-xl ${
-                        isMenuActive(menu)
-                          ? " text-white   bg-darkest-blue "
-                          : " text-light-grey border border-light-stroke "
-                      }`}
-                    >
-                      <span>{menu.icon}</span>
-                      <p>{menu.title}</p>
-                    </li>
-                  </NavLink>
-                </React.Fragment>
-              ))}
-            </ul>
-          </div>
-          {Menus.map((menu, index) => {
-          const isNestedSidebarVisible = (menuTitle, pathname) => {
-            if (menuTitle === "Bins") {
-              return (
-                pathname.startsWith("/bins/") && pathname !== "/bins"
-              );
-            }
+        <div className="px-6 pb-10 bg-light-blue overflow-auto no-scrollbar ">
+          <ul>
+            {/* ✅ OLD UI + NEW RBAC filter */}
+            {Menus.map((menu, index) => (
+              <React.Fragment key={index}>
+                <NavLink to={menu.to}>
+                  <li
+                    className={`w-[84px] text-sm font-extralight flex flex-col items-center text-center p-3 my-4  rounded-xl ${
+                      isMenuActive(menu)
+                        ? " text-white   bg-darkest-blue "
+                        : " text-light-grey border border-light-stroke "
+                    }`}
+                  >
+                    <span>{menu.icon}</span>
+                    <p>{menu.title}</p>
+                  </li>
+                </NavLink>
+              </React.Fragment>
+            ))}
+          </ul>
+        </div>
 
-            if (menuTitle === "Escalation") {
-              return pathname.startsWith("/escalation/") && pathname !== "/escalation";
-            }
-
-           
-
-            
-            // if (menuTitle === "Reports") {
-            //   return pathname.startsWith("/reports/") && pathname !== "/reports";
-            // }
-            if (menuTitle === "Employee Management") {
-                return pathname.startsWith("/employeemanagement/") && pathname !== "/employeemanagement";
-              }
-            return pathname.startsWith(`/${menuTitle.toLowerCase()}`);
-          };
-
+        {/* ✅ OLD Nested sidebar logic + NEW RBAC */}
+        {Menus.map((menu, index) => {
           const shouldShowSidebar =
             menu.nested &&
-            isNestedSidebarVisible(menu.title, location.pathname);
+            isNestedSidebarVisible(menu.title, location.pathname) &&
+            hasAccess(menu.feature); // ✅ NEW: Check access
 
           return (
             shouldShowSidebar &&
@@ -210,9 +224,12 @@ const LayOut = () => {
           );
         })}
 
-          <div className="w-full pt-5 ml-3 overflow-auto no-scrollbar ">
-            <Outlet />
-          </div>
+        {/* ✅ OLD Content area - unchanged */}
+        <div className="w-full pt-5 ml-3 overflow-auto no-scrollbar ">
+          <Outlet />
+        </div>
+
+   
       </div>
     </div>
   );

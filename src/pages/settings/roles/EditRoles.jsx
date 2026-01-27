@@ -44,7 +44,7 @@ const EditRoles = () => {
  const fetchExistingRole = useCallback(async () => {
   try {
     const response = await axios.get(
-      `${API}/roles/getrolebyid?roleId=${roleId}`
+      `${API}/roles/getrolebyid/${roleId}`
     );
 
     const role = response.data.data;
@@ -141,7 +141,7 @@ const EditRoles = () => {
 
   try {
     await axios.put(
-      `${API}/roles/updaterolebyid?roleId=${roleId}`,
+      `${API}/roles/updaterolebyid?role_id=${roleId}`,
       payload
     );
 
@@ -178,14 +178,14 @@ const EditRoles = () => {
         </div>
       </div>
       <div className="flex items-center  gap-10 mb-4">
-        <span className="font-semibold dark:text-white text-black ">Role name</span>
+        <span className="font-semibold  text-black ">Role name</span>
         <input
           type="text"
           value={roleName}
           onChange={(e) => setRoleName(e.target.value)}
-          className="  px-3 py-1.5 rounded-md outline-none dark:bg-layout-dark bg-white text-black dark:text-white"
+          className="  px-3 py-1.5 rounded-md outline-none  bg-white text-black "
         />
-        <span className="font-semibold dark:text-white text-black  ">Created By</span>
+        <span className="font-semibold  text-black  ">Created By</span>
         <input
           type="text"
           value={createdBy}

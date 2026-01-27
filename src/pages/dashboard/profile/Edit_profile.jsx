@@ -32,16 +32,17 @@ const Edit_profile = ({ user, onSave }) => {
     if (user) {
       reset({
         name: user.name || "",
-        email: user.email || "",
+        email: user.emailid || "",
         phonenumber: user.phonenumber || "",
       });
     }
   }, [user, reset]);
 
+  console.log("User data in Edit_profile:", user);
   const onSubmit = async (data) => {
     try {
       // Use the correct endpoint from your router
-      await axios.put(`${API}/user/updateuserbyid/${user.id}`, {
+      await axios.put(`${API}/employee/updateuser/${user.id}`, {
         name: data.name,
         email: data.email,
         phonenumber: data.phonenumber,

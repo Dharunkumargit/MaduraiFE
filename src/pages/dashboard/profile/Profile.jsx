@@ -50,7 +50,7 @@ const Profile = () => {
           />
 
           <h2 className="text-lg font-semibold">{user.name}</h2>
-          <p className="text-sm text-light-grey">{user.role || "User"}</p>
+          <p className="text-sm text-light-grey">   {user.role?.role_name || user.role || "User"}</p>
           <p className="text-sm text-light-grey">{user.email}</p>
           
 

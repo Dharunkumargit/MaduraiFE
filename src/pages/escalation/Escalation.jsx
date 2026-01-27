@@ -9,7 +9,7 @@ const Escalation = () => {
   
   const stored = localStorage.getItem("user");
   const user = JSON.parse(stored);
-  const rolename = user.role;
+  const rolename = user.role.role_name;
 
   const getEscalations = async () => {
     try {

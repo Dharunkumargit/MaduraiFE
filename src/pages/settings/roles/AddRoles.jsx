@@ -236,7 +236,7 @@ const AddRoles = () => {
                                 e.target.checked
                               )
                             }
-                            className="appearance-none w-5 h-5 border-2 dark:border-white border-light-grey rounded-md checked:bg-darkest-blue checked:border-transparent focus:outline-none transition-all duration-200"
+                            className="appearance-none w-5 h-5 border-2  border-light-grey rounded-md checked:bg-darkest-blue checked:border-transparent focus:outline-none transition-all duration-200"
                           />
                           {/* Custom Checkmark */}
                           <span className="absolute w-5 h-5 flex justify-center items-center pointer-events-none">
