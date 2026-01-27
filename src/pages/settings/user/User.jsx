@@ -42,21 +42,21 @@ const User = () => {
   }, [currentPage]);
 
   const handleDeleteUser = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this bin?"
-    );
+  if (!window.confirm("Are you sure you want to delete this user?")) return;
 
-    if (!confirmDelete) return;
-    try {
-      await axios.delete(`${API}/user/deleteuserbyid/${id}`);
-      toast.success("User deleted successfully");
-      // Remove row instantly
-      setusers((prev) => prev.filter((user) => user._id !== id));
-    } catch (error) {
-      toast.error("Failed to delete user");
-      console.error(error);
+  try {
+    await axios.delete(`${API}/user/deleteuserbyid/${id}`);
+    toast.success("User deleted successfully");
+
+    if (users.length === 1 && currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    } else {
+      getAllUsers(currentPage);
     }
+  } catch (error) {
+    toast.error("Failed to delete user");
   }
+};
 
   const Columns = [
     { label: "Name", key: "name" },

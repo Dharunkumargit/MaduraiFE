@@ -74,12 +74,12 @@ const Ward = () => {
         addButtonLabel="Add Ward"
         addButtonIcon={<RiUserAddLine size={22} />}
         AddModal={(props) => <AddWard {...props} onRefresh={getWards} />}/>
-        {/* <Pagination
+        <Pagination
         totalItems={totalItems}
         itemsPerPage={itemsPerPage}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
-      /> */}
+      />
     </div>
   )
 }

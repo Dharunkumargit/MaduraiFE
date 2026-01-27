@@ -79,12 +79,12 @@ const Zone = () => {
         AddModal={(props) => <AddZone {...props} onRefresh={getZones} />}
       />
 
-      {/* <Pagination
+      <Pagination
         totalItems={totalItems}
         itemsPerPage={itemsPerPage}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
-      /> */}
+      />
     </div>
   );
 };

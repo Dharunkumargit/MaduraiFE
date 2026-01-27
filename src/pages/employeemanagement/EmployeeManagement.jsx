@@ -17,7 +17,7 @@ const EmployeeManagement = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const itemsPerPage = 10;
+  const itemsPerPage = 9;
   const Columns = [
     { label: "Name", key: "name" },
     
@@ -29,43 +29,41 @@ const EmployeeManagement = () => {
     
   ];
   const getEmployees = async (page = 1) => {
-    try {
-      setLoading(true);
-      const res = await axios.get(
-        `${API}/employee/getemployees?page=${page}&limit=${itemsPerPage}`
-      );
+  try {
+    setLoading(true);
 
-      setEmployees(res.data.data);
-      setTotalItems(res.data.pagination.totalItems);
-      setCurrentPage(res.data.pagination.currentPage);
-    } catch (err) {
-      console.log("Error fetching employees:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const res = await axios.get(
+      `${API}/employee/getemployees?page=${page}&limit=${itemsPerPage}`
+    );
 
-  useEffect(() => {
-    getEmployees(currentPage);
-  }, [currentPage]);
+    setEmployees(res.data.data);
+    setTotalItems(res.data.pagination.totalItems);
+    setCurrentPage(res.data.pagination.currentPage);
+  } catch (err) {
+    console.log("Error fetching employees:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+useEffect(() => {
+  getEmployees(currentPage);
+}, [currentPage]);
  
   const handleDelete = async (id) => {
-  const confirmDelete = window.confirm(
-    "Are you sure you want to delete?"
-  );
-
-  if (!confirmDelete) return;
+  if (!window.confirm("Are you sure you want to delete?")) return;
 
   try {
     await axios.delete(`${API}/employee/deleteemployee/${id}`);
-
     toast.success("Employee deleted successfully");
 
-    // ✅ Correct state update
-     setEmployees((prev) => prev.filter((emp) => emp._id !== id));
-    getEmployees(currentPage)
+    // 🧠 If last item on page → go back one page
+    if (employees.length === 1 && currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    } else {
+      getEmployees(currentPage);
+    }
   } catch (error) {
-    console.error("Delete error:", error);
     toast.error(error.response?.data?.message || "Delete failed");
   }
 };

@@ -3,6 +3,7 @@ import Title from "../../components/Title";
 import SummaryCard from "../../components/SummaryCard";
 import { HiOutlineTrash } from "react-icons/hi";
 import DonutChart from "../../components/DonutChart";
+
 import {
   Barcolors,
   Bardata,
@@ -13,6 +14,7 @@ import ChartTitle from "../../components/ChartTitle";
 import { TbReportAnalytics, TbTrashX } from "react-icons/tb";
 import axios from "axios";
 import { API } from "../../../const";
+import { IoTrashBinOutline } from "react-icons/io5";
 
 const Dashboard = () => {
   const [binsData, setBinsData] = useState([]);
@@ -130,38 +132,38 @@ const Dashboard = () => {
             status="Waste collected"
             value={`${stats.waste?.totalWasteCollected || 0} Tons`}
             title="Total Waste Collected"
-            icon={<HiOutlineTrash size={20} />}
+            icon={<IoTrashBinOutline  size={20} />}
           />
           <SummaryCard
             status="Waste Collected"
             value={`${stats.waste?.currentMonthWaste || 0} Tons`}
             title="Month Wise Waste Collected"
-            icon={<HiOutlineTrash size={20} />}
+            icon={<IoTrashBinOutline  size={20} />}
           />
           <SummaryCard
             status="Waste Collected"
             value={`${stats.waste?.monthlyAvgWaste || 0} Tons`}
             title="Average Montly Waste Collected"
-            icon={<HiOutlineTrash size={20} />}
+            icon={<IoTrashBinOutline  size={20} />}
           />
           <SummaryCard
             status="Active Bins"
             value={stats.bins?.activeBins || 0}
             title="Active Bins"
-            icon={<TbTrashX size={21} />}
+            icon={<IoTrashBinOutline  size={21} />}
           />
           <SummaryCard
             status="InActive Bins"
             value={stats.bins?.inactiveBins || 0}
             title="InActive Bins"
-            icon={<TbTrashX size={21} />}
+            icon={<IoTrashBinOutline  size={21} />}
           />
 
           <SummaryCard
             title="Total Bins"
             value={stats.bins?.totalBins || 0}
             status="All Bins"
-            icon={<TbReportAnalytics size={21} />}
+            icon={<IoTrashBinOutline  size={21} />}
           />
         </div>
 

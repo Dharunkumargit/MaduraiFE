@@ -1,75 +1,75 @@
-import React, { useEffect, useState } from 'react'
-import Table from '../../components/Table'
-import { HiOutlineTrash } from 'react-icons/hi'
-import AddNewBin from './AddNewBin';
+import React, { useEffect, useState } from "react";
+import Table from "../../components/Table";
+import { HiOutlineTrash } from "react-icons/hi";
+import AddNewBin from "./AddNewBin";
 import axios from "axios";
-import { API } from '../../../const';
-import { toast } from 'react-toastify';
-import EditBins from './EditBins';
-import Pagination from '../../components/Pagination';
+import { API } from "../../../const";
+import { toast } from "react-toastify";
+import EditBins from "./EditBins";
+import Pagination from "../../components/Pagination";
 
 const Bins = () => {
   const [binData, setBinData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
-const [totalPages, setTotalPages] = useState(0);
-
-const itemsPerPage = 9;
-  // -----------------------
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 9;
   // 1️⃣ Fetch bins from backend
   // -----------------------
- const fetchbins = async (page = 1) => {
-  try {
-    setLoading(true);
-    const res = await axios.get(
-      `${API}/bins/getallbins?page=${page}&limit=${itemsPerPage}`
-    );
+  const fetchbins = async (page = 1) => {
+    try {
+      setLoading(true);
 
-    const formattedData = res.data.data.map((bin) => ({
-      ...bin,
-      lastReportedAt: bin.lastReportedAt
-        ? new Date(bin.lastReportedAt).toLocaleString("en-IN", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true,
-          })
-        : "-",
-    }));
+      const res = await axios.get(
+        `${API}/bins/getallbins?page=${page}&limit=${itemsPerPage}`,
+      );
 
-    setBinData(formattedData);
-    setTotalPages(res.data.totalPages);
-    setCurrentPage(res.data.currentPage);
-  } catch (error) {
-    console.log("Bin Fetch Error:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+      const formattedData = res.data.data.map((bin) => ({
+        ...bin,
+        lastReportedAt: bin.lastReportedAt
+          ? new Date(bin.lastReportedAt).toLocaleString("en-IN", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            })
+          : "-",
+      }));
 
+      setBinData(formattedData);
+      setTotalItems(res.data.pagination.totalItems);
+      setCurrentPage(res.data.pagination.currentPage);
+    } catch (error) {
+      console.log("Bin Fetch Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
- useEffect(() => {
-  fetchbins(currentPage);
-}, [currentPage]);
+  useEffect(() => {
+    fetchbins(currentPage);
+  }, [currentPage]);
 
   // -----------------------
   // 3️⃣ Delete a bin
   // -----------------------
   const handleDeleteBin = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this bin?"
-    );
-    if (!confirmDelete) return;
+    if (!window.confirm("Are you sure you want to delete this bin?")) return;
 
     try {
       await axios.delete(`${API}/bins/deletebinbyid/${id}`);
       toast.success("Bin deleted successfully");
-      setBinData(prev => prev.filter(bin => bin._id !== id));
+
+      // 🧠 last item on page logic
+      if (binData.length === 1 && currentPage > 1) {
+        setCurrentPage((prev) => prev - 1);
+      } else {
+        fetchbins(currentPage);
+      }
     } catch (error) {
       toast.error("Failed to delete bin");
-      console.error(error);
     }
   };
 
@@ -113,13 +113,13 @@ const itemsPerPage = 9;
         routepoint={"viewbins"}
       />
       <Pagination
-        totalItems={totalPages}
+        totalItems={totalItems}
         itemsPerPage={itemsPerPage}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
       />
     </div>
-  )
-}
+  );
+};
 
 export default Bins;

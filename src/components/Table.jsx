@@ -307,13 +307,13 @@ const Table = ({
           </div>
         </div>
       </div>
-      <Pagination
+      {/* <Pagination
         totalItems={sortedItems.length}
         itemsPerPage={itemsPerPage}
         currentPage={currentPage}
         totalPages={totalPages}
         setCurrentPage={setCurrentPage}
-      />
+      /> */}
       {AddModal && showAdd && <AddModal onclose={() => setShowAdd(false)} />}
       {EditModal && showEdit && (
         <EditModal onclose={() => setShowEdit(false)} item={selectedItem} />

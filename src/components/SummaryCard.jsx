@@ -5,7 +5,7 @@ const SummaryCard = ({ title, value, status,icon }) => (
       <p className="text-xs text-[#008000]">{status}</p>
       <h2 className="font-semibold">{value}</h2>
   </div>
-  <div className="bg-white px-2 py-2 rounded-lg text-[#2A848D]  ">
+  <div className="bg-white px-2 py-2  rounded-lg text-[#2A848D]  ">
   {icon}
   </div>
       </div>
