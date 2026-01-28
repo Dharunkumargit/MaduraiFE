@@ -295,12 +295,12 @@ const Dashboard = () => {
                   <tr className="text-light-grey border-b-2 border-light-blue text-center text-sm">
                     <td className="py-3 px-5">1</td>
                     <td className="py-3 px-5">MSB006</td>
-                    <td className="py-3 px-5">Full</td>
+                    <td className="py-3 px-5">75</td>
                   </tr>
                   <tr className="text-light-grey text-center text-sm">
                     <td className="py-3 px-5">2</td>
                     <td className="py-3 px-5">MSB007</td>
-                    <td className="py-3 px-5">Full</td>
+                    <td className="py-3 px-5">85</td>
                   </tr>
                 </tbody>
               </table>
