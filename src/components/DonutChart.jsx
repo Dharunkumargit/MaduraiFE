@@ -16,12 +16,11 @@ const DonutChart = ({
 
   return (
     <div className="bg-lightest-blue border-3 border-white rounded-xl p-5 h-80">
-      
       <div className="flex justify-between items-center">
         <h3 className="text-base font-semibold text-gray-800">{title}</h3>
 
         <div className="relative w-32 text-sm">
-{/*           
+          {/*           
           <button
             onClick={() => setIsOpen((prev) => !prev)}
             className="w-full h-9 flex justify-between items-center pl-3 rounded-md bg-white shadow-sm text-gray-600"
@@ -37,7 +36,6 @@ const DonutChart = ({
             </span>
           </button> */}
 
-          
           {isOpen && (
             <ul className="absolute z-10 mt-1 w-full bg-white border border-[#cdd3ff] rounded-md shadow text-gray-700">
               {options.map((option) => (
@@ -59,7 +57,6 @@ const DonutChart = ({
         </div>
       </div>
 
-      
       <div className="flex justify-evenly items-center mt-7">
         <div className="w-[70%] h-50">
           <ResponsiveContainer width="100%" height={height}>
@@ -81,15 +78,14 @@ const DonutChart = ({
                   />
                 ))}
               </Pie>
-             <Tooltip 
-    formatter={(value) => [`${value} Tons`, 'Total Waste']}  // 🔥 SHOWS "3 Tons"
-    labelFormatter={(label) => `Zone: ${label}`}             // 🔥 "Zone: Zone 1"
-  />
+              <Tooltip
+                formatter={(value) => [`${value} Tons`, "Total Waste"]} // 🔥 SHOWS "3 Tons"
+                labelFormatter={(label) => `Zone: ${label}`} // 🔥 "Zone: Zone 1"
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
 
-       
         <div className="flex flex-col gap-2 mr-6 text-sm">
           {data.map((entry, index) => (
             <div key={index} className="flex items-center gap-2">

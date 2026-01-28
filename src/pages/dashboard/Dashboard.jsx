@@ -217,31 +217,48 @@ const Dashboard = () => {
         </div>
 
         {/* 🔥 TABLES - LIVE DATA (SAME UI) */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-          <div className="bg-lightest-blue rounded-xl border-3 border-white h-74 font-roboto-flex">
-            <h2 className="text-base font-semibold p-4 text-black">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
+          {/* TOP 10 WARDS */}
+          <div className="bg-lightest-blue rounded-lg sm:rounded-xl border-2 sm:border-3 border-white font-roboto-flex w-full">
+            <h2 className="text-sm sm:text-base font-semibold p-3 sm:p-4 text-black">
               Top 10 Wards
             </h2>
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white rounded-lg shadow-xl overflow-hidden">
                 <thead>
-                  <tr className="bg-white text-center text-black font-bold border-b-3 border-light-blue text-sm">
-                    <th className="py-4 px-5 text-sm">S.no</th>
-                    <th className="py-4 px-5 text-sm">Ward</th>
-                    <th className="py-4 px-5 text-sm">Bins</th>
-                    <th className="py-4 px-5 text-sm">Waste collected</th>
+                  <tr className="bg-white text-center text-black font-bold border-b-2 sm:border-b-3 border-light-blue">
+                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
+                      S.no
+                    </th>
+                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
+                      Ward
+                    </th>
+                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
+                      Bins
+                    </th>
+                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
+                      Waste
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {wardsdata.map((bin, index) => (
                     <tr
                       key={index}
-                      className="text-light-grey border-b-2 border-light-blue last:border-none text-center text-sm"
+                      className="text-light-grey border-b border-light-blue last:border-none text-center"
                     >
-                      <td className="py-3 px-5 text-sm">{index + 1}</td>
-                      <td className="py-3 px-5 text-sm">{bin.ward}</td>
-                      <td className="py-3 px-5 text-sm">{bin.bin}</td>
-                      <td className="py-3 px-5 text-sm">{bin.waste}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
+                        {index + 1}
+                      </td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
+                        {bin.ward}
+                      </td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
+                        {bin.bin}
+                      </td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
+                        {bin.waste}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -249,28 +266,43 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="bg-lightest-blue rounded-xl border-3 border-white h-74 font-roboto-flex">
-            <h2 className="text-base font-semibold p-4 text-black">
+          {/* TOP 10 HOTSPOT */}
+          <div className="bg-lightest-blue rounded-lg sm:rounded-xl border-2 sm:border-3 border-white font-roboto-flex w-full">
+            <h2 className="text-sm sm:text-base font-semibold p-3 sm:p-4 text-black">
               Top 10 Hotspot
             </h2>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto no-scrollbar">
               <table className="min-w-full bg-white rounded-lg overflow-hidden">
                 <thead>
-                  <tr className="bg-white text-center text-black font-semibold border-b-3 border-light-blue text-sm">
-                    <th className="py-4 px-5 text-sm">S.no</th>
-                    <th className="py-4 px-5 text-sm">Location</th>
-                    <th className="py-4 px-5 text-sm">Waste collected</th>
+                  <tr className="bg-white text-center text-black font-semibold border-b-2 sm:border-b-3 border-light-blue">
+                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
+                      S.no
+                    </th>
+                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
+                      Location
+                    </th>
+                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
+                      Waste
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {hotspotdata.map((bin, index) => (
                     <tr
                       key={index}
-                      className="text-light-grey border-b-2 border-light-blue last:border-none text-center text-sm"
+                      className="text-light-grey border-b border-light-blue last:border-none text-center"
                     >
-                      <td className="py-3 px-5 text-sm">{index + 1}</td>
-                      <td className="py-3 px-5 text-sm">{bin.location}</td>
-                      <td className="py-3 px-5 text-sm">{bin.waste}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
+                        {index + 1}
+                      </td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
+                        <span className="block truncate max-w-[100px] sm:max-w-[150px] md:max-w-none mx-auto">
+                          {bin.location}
+                        </span>
+                      </td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
+                        {bin.waste}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -278,29 +310,48 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="bg-lightest-blue rounded-xl border-3 border-white h-74">
-            <h2 className="text-base font-semibold p-4 text-black">
+          {/* TOP 10 ESCALATION */}
+          <div className="bg-lightest-blue rounded-lg sm:rounded-xl border-2 sm:border-3 border-white font-roboto-flex w-full md:col-span-2 xl:col-span-1">
+            <h2 className="text-sm sm:text-base font-semibold p-3 sm:p-4 text-black">
               Top 10 Escalation
             </h2>
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white rounded-lg overflow-hidden">
                 <thead>
-                  <tr className="bg-white text-center text-black font-semibold border-b-3 border-light-blue text-sm">
-                    <th className="py-4 px-5">S.no</th>
-                    <th className="py-4 px-5 text-sm">Bin ID</th>
-                    <th className="py-4 px-5 text-sm">Level</th>
+                  <tr className="bg-white text-center text-black font-semibold border-b-2 sm:border-b-3 border-light-blue">
+                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
+                      S.no
+                    </th>
+                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
+                      Bin ID
+                    </th>
+                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
+                      Level
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="text-light-grey border-b-2 border-light-blue text-center text-sm">
-                    <td className="py-3 px-5">1</td>
-                    <td className="py-3 px-5">MSB006</td>
-                    <td className="py-3 px-5">75</td>
+                  <tr className="text-light-grey border-b border-light-blue text-center">
+                    <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
+                      1
+                    </td>
+                    <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
+                      MSB006
+                    </td>
+                    <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
+                      75
+                    </td>
                   </tr>
-                  <tr className="text-light-grey text-center text-sm">
-                    <td className="py-3 px-5">2</td>
-                    <td className="py-3 px-5">MSB007</td>
-                    <td className="py-3 px-5">85</td>
+                  <tr className="text-light-grey text-center">
+                    <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
+                      2
+                    </td>
+                    <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
+                      MSB007
+                    </td>
+                    <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
+                      85
+                    </td>
                   </tr>
                 </tbody>
               </table>
