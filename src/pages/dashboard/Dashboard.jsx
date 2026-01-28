@@ -132,38 +132,38 @@ const Dashboard = () => {
             status="Waste collected"
             value={`${stats.waste?.totalWasteCollected || 0} Tons`}
             title="Total Waste Collected"
-            icon={<IoTrashBinOutline  size={20} />}
+            icon={<IoTrashBinOutline size={20} />}
           />
           <SummaryCard
             status="Waste Collected"
             value={`${stats.waste?.currentMonthWaste || 0} Tons`}
             title="Month Wise Waste Collected"
-            icon={<IoTrashBinOutline  size={20} />}
+            icon={<IoTrashBinOutline size={20} />}
           />
           <SummaryCard
             status="Waste Collected"
             value={`${stats.waste?.monthlyAvgWaste || 0} Tons`}
             title="Average Montly Waste Collected"
-            icon={<IoTrashBinOutline  size={20} />}
+            icon={<IoTrashBinOutline size={20} />}
           />
           <SummaryCard
             status="Active Bins"
             value={stats.bins?.activeBins || 0}
             title="Active Bins"
-            icon={<IoTrashBinOutline  size={21} />}
+            icon={<IoTrashBinOutline size={21} />}
           />
           <SummaryCard
             status="InActive Bins"
             value={stats.bins?.inactiveBins || 0}
             title="InActive Bins"
-            icon={<IoTrashBinOutline  size={21} />}
+            icon={<IoTrashBinOutline size={21} />}
           />
 
           <SummaryCard
             title="Total Bins"
             value={stats.bins?.totalBins || 0}
             status="All Bins"
-            icon={<IoTrashBinOutline  size={21} />}
+            icon={<IoTrashBinOutline size={21} />}
           />
         </div>
 
@@ -287,21 +287,21 @@ const Dashboard = () => {
                 <thead>
                   <tr className="bg-white text-center text-black font-semibold border-b-3 border-light-blue text-sm">
                     <th className="py-4 px-5">S.no</th>
-                    <th className="py-4 px-5 text-sm">Engineer</th>
-                    <th className="py-4 px-5 text-sm">Escalation</th>
+                    <th className="py-4 px-5 text-sm">Bin ID</th>
+                    <th className="py-4 px-5 text-sm">Level</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {escalationdata.map((bin, index) => (
-                    <tr
-                      key={index}
-                      className="text-light-grey border-b-2 border-light-blue last:border-none text-center text-sm"
-                    >
-                      <td className="py-3 px-5 text-sm">{index + 1}</td>
-                      <td className="py-3 px-5 text-sm">{bin.engineer}</td>
-                      <td className="py-3 px-5 text-sm">{bin.escalation}</td>
-                    </tr>
-                  ))}
+                  <tr className="text-light-grey border-b-2 border-light-blue text-center text-sm">
+                    <td className="py-3 px-5">1</td>
+                    <td className="py-3 px-5">MSB006</td>
+                    <td className="py-3 px-5">Full</td>
+                  </tr>
+                  <tr className="text-light-grey text-center text-sm">
+                    <td className="py-3 px-5">2</td>
+                    <td className="py-3 px-5">MSB007</td>
+                    <td className="py-3 px-5">Full</td>
+                  </tr>
                 </tbody>
               </table>
             </div>

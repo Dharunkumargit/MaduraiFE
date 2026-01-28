@@ -16,6 +16,9 @@ const Bins = () => {
   const itemsPerPage = 9;
   // 1️⃣ Fetch bins from backend
   // -----------------------
+ 
+
+
   const fetchbins = async (page = 1) => {
     try {
       setLoading(true);
@@ -37,7 +40,7 @@ const Bins = () => {
             })
           : "-",
       }));
-
+     
       setBinData(formattedData);
       setTotalItems(res.data.pagination.totalItems);
       setCurrentPage(res.data.pagination.currentPage);
@@ -51,7 +54,9 @@ const Bins = () => {
   useEffect(() => {
     fetchbins(currentPage);
   }, [currentPage]);
-
+ 
+ console.log("Bin Data:", binData);
+ 
   // -----------------------
   // 3️⃣ Delete a bin
   // -----------------------
