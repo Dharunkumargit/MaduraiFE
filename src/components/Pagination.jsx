@@ -3,7 +3,7 @@ import { GoArrowLeft, GoArrowRight } from "react-icons/go";
 
 const Pagination = ({
   totalItems = 0,
-  itemsPerPage = 10,
+  itemsPerPage ,
   currentPage = 1,
   setCurrentPage,
 }) => {

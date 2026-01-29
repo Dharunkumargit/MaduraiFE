@@ -6,12 +6,19 @@ import axios from "axios";
 import AddRoles from "./AddRoles";
 import { toast } from "react-toastify";
 import { API } from "../../../../const";
+import { useOutletContext } from "react-router";
 
 const Roles = () => {
   const [roleData, setRoleData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const { searchTerm } = useOutletContext();
+  const filteredRoles = roleData.filter((role) =>
+    Object.values(role).some((value) =>
+      String(value).toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
 
   const itemsPerPage = 8;
 
@@ -63,7 +70,7 @@ const Roles = () => {
         addButtonLabel="Add Role"
         addButtonIcon={<GrGroup size={22} />}
         colomns={Columns}
-        tabledata={roleData}
+        tabledata={filteredRoles}
         onDelete={handleDeleteRole}
         loading={loading}
         showViewButton={false}

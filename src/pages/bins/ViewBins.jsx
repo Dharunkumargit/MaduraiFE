@@ -10,27 +10,25 @@ delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
     "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 const formatISTDateTimeManual = (utcDate) => {
   if (!utcDate) return "-";
   const date = new Date(utcDate);
-  
+
   // ✅ Subtract 5:30 for IST (UTC → IST)
   date.setHours(date.getHours() - 5);
   date.setMinutes(date.getMinutes() - 30);
-  
+
   return date.toLocaleString("en-IN", {
     // Full date + time format
     day: "numeric",
-    month: "short", 
+    month: "short",
     year: "numeric",
     hour: "numeric",
     minute: "2-digit",
-    hour12: true
+    hour12: true,
   });
 };
 const ViewBins = () => {
@@ -52,13 +50,12 @@ const ViewBins = () => {
   ].filter(Boolean);
 
   const sortedUpdates = allUpdates.sort(
-    (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+    (a, b) => new Date(b.timestamp) - new Date(a.timestamp),
   );
 
   const latest = sortedUpdates[0];
   const filled = latest?.fill_level ?? bin.filled ?? "-";
   const lastUpdated = formatISTDateTimeManual(latest?.timestamp);
-
 
   const mainFields = [
     { label: "Status", value: bin.status },
@@ -85,18 +82,28 @@ const ViewBins = () => {
               <div className="col-span-6">
                 {field.label === "Location" ? (
                   !selectedImage && bin.latitude && bin.longitude ? (
-                    <MapContainer
-                      center={[Number(bin.latitude), Number(bin.longitude)]}
-                      zoom={14}
-                      style={{ height: "200px", width: "60%" }}
-                    >
-                      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                      <Marker
-                        position={[Number(bin.latitude), Number(bin.longitude)]}
+                    <div className="space-y-2">
+                      <MapContainer
+                        center={[Number(bin.latitude), Number(bin.longitude)]}
+                        zoom={14}
+                        style={{ height: "200px", width: "60%" }}
                       >
-                        <Popup>{bin.street || "Bin Location"}</Popup>
-                      </Marker>
-                    </MapContainer>
+                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                        <Marker
+                          position={[
+                            Number(bin.latitude),
+                            Number(bin.longitude),
+                          ]}
+                        >
+                          <Popup>{bin.street || "Bin Location"}</Popup>
+                        </Marker>
+                      </MapContainer>
+
+                      {/* 📍 Location name under map */}
+                      <p className="text-sm text-gray-600 font-medium">
+                        {bin.street || "Location not available"}
+                      </p>
+                    </div>
                   ) : (
                     "-"
                   )
@@ -140,10 +147,7 @@ const ViewBins = () => {
           className="fixed inset-0 flex justify-center items-center backdrop-blur-sm bg-black/40 z-50"
           onClick={() => setSelectedImage(null)}
         >
-          <div
-            className=""
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="" onClick={(e) => e.stopPropagation()}>
             <img
               src={selectedImage.image}
               alt="preview"
@@ -153,16 +157,7 @@ const ViewBins = () => {
             <p className="text-sm text-white mt-2 text-center">
               Last Updated:{" "}
               {selectedImage.timestamp
-                ? new Date(selectedImage.timestamp).toLocaleString(
-                    "en-IN",
-                    {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    }
-                  )
+                ? formatISTDateTimeManual(selectedImage.timestamp)
                 : "-"}
             </p>
           </div>

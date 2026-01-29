@@ -7,12 +7,19 @@ import { LuContact } from "react-icons/lu";
 import axios from "axios";
 import { API } from "../../../const";
 import { toast } from "react-toastify";
+import { useOutletContext } from "react-router";
 
 const EmployeeManagement = () => {
   const [employees, setEmployees] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
+  const { searchTerm } = useOutletContext();
+  const filteredEmployees = employees.filter((employee) =>
+    Object.values(employee).some((value) =>
+      String(value).toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
 
   const itemsPerPage = 9;
 
@@ -80,7 +87,7 @@ const EmployeeManagement = () => {
         sub_title="Table"
         pagetitle="Employee Management"
         colomns={Columns}
-        tabledata={employees}
+        tabledata={filteredEmployees}
         addButtonLabel="Add Employee"
         addButtonIcon={<LuContact size={22} />}
         AddModal={(modalProps) => (

@@ -7,14 +7,21 @@ import Pagination from "../../components/Pagination";
 import axios from "axios";
 import { API } from "../../../const";
 import { toast } from "react-toastify";
+import { useOutletContext } from "react-router";
 
 const Bins = () => {
   const [binData, setBinData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
+  const { searchTerm } = useOutletContext();
 
   const itemsPerPage = 9;
+  const filteredBins = binData.filter((bin) =>
+    Object.values(bin).some((value) =>
+      String(value).toLowerCase().includes(searchTerm.toLowerCase()),
+    ),
+  );
 
   // ✅ IST Formatter
   const formatISTDateTimeManual = (utcDate) => {
@@ -38,7 +45,7 @@ const Bins = () => {
     try {
       setLoading(true);
       const res = await axios.get(
-        `${API}/bins/getallbins?page=${page}&limit=${itemsPerPage}`
+        `${API}/bins/getallbins?page=${page}&limit=${itemsPerPage}`,
       );
 
       const formatted = res.data.data.map((bin) => ({
@@ -93,7 +100,9 @@ const Bins = () => {
         addButtonLabel="Add New Location"
         addButtonIcon={<HiOutlineTrash size={22} />}
         colomns={Columns}
-        tabledata={binData}
+        tabledata={filteredBins}
+        currentPage={currentPage} // ✅ ADD
+        itemsPerPage={itemsPerPage}
         onDelete={handleDeleteBin}
         loading={loading}
         EditModal={EditBins}

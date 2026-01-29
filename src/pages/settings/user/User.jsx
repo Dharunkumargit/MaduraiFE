@@ -10,12 +10,20 @@ import EditUser from "./EditUser";
 import { toast } from "react-toastify";
 import AddEmploye from "../../employeemanagement/AddEmploye";
 import Pagination from "../../../components/Pagination";
+import { useOutletContext } from "react-router";
 
 const User = () => {
   const [employees, setEmployees] = useState([]); // ✅ Changed from users
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const { searchTerm } = useOutletContext();
+
+  const filteredEmployees = employees.filter((employee) =>
+    Object.values(employee).some((value) =>
+      String(value).toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
   const itemsPerPage = 8;
 
   // ✅ ONE LINE FILTER - Role assigned BUT no role_id
@@ -75,7 +83,7 @@ const User = () => {
         addButtonLabel="Add User"
         addButtonIcon={<RiUserAddLine size={22} />}
         colomns={Columns}
-        tabledata={employees}
+        tabledata={filteredEmployees}
         loading={loading}
         onDelete={handleDeleteEmployee}
         AddModal={(props) => (

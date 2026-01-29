@@ -7,6 +7,10 @@ import { HiArrowsUpDown } from "react-icons/hi2";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { LuEye } from "react-icons/lu";
 import { Pencil } from "lucide-react";
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+
 import { useNavigate } from "react-router";
 import Pagination from "./Pagination";
 import Loader from "./Loader";
@@ -18,9 +22,12 @@ const Table = ({
   addButtonLabel,
   addButtonIcon,
   addroutepoint,
+
   contentMarginTop = "mt-4",
   tabledata,
   colomns = [],
+  currentPage = 1,        
+  itemsPerPage = 10,
   showEditButton = true,
   showDeleteButton = true,
   showViewButton = true,
@@ -41,8 +48,9 @@ const Table = ({
   const [showView, setShowView] = useState(false);
   const navigate = useNavigate();
   const [totalPages, setTotalPages] = useState([]);
-  const itemsPerPage = 10;
-  const [currentPage, setCurrentPage] = useState(1);
+ 
+  const [showExport, setShowExport] = useState(false);
+
   const safeData = Array.isArray(tabledata) ? tabledata : [];
   const sortedItems = useMemo(() => {
     const items = [...safeData];
@@ -64,6 +72,68 @@ const Table = ({
     }
     setSortConfig({ key, direction });
   };
+  const handleExportExcel = () => {
+    if (!sortedItems.length) return;
+
+    const excelData = sortedItems.map((item) => {
+      const row = {};
+      colomns.forEach((col) => {
+        row[col.label] = item[col.key] ?? "-";
+      });
+      return row;
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, title || "Table Data");
+
+    XLSX.writeFile(workbook, `${title || "table-data"}.xlsx`);
+  };
+
+  const handleExportPDF = () => {
+  if (!sortedItems.length) {
+    alert("No data to export");
+    return;
+  }
+
+  try {
+    const doc = new jsPDF({
+       // 🔥 REQUIRED for bins
+      unit: "mm",
+      format: "a4",
+    });
+
+    const headers = colomns.map((col) => col.label);
+
+    const body = sortedItems.map((item) =>
+      colomns.map((col) => item[col.key] ?? "-")
+    );
+
+    doc.setFontSize(14);
+    doc.text(title || "Table Data", 14, 15);
+
+    autoTable(doc, {
+      head: [headers],
+      body,
+      startY: 22,
+      styles: {
+        fontSize: 8,
+        cellPadding: 2,
+      },
+      headStyles: {
+        fillColor: [52, 152, 219],
+        textColor: 255,
+      },
+      theme: "grid",
+    });
+
+    doc.save(`${title || "table-data"}.pdf`);
+  } catch (error) {
+    console.error("PDF Export Error:", error);
+    alert("PDF export failed. Check console.");
+  }
+};
+
   return (
     <div>
       <div className="font-roboto-flex flex flex-col h-full">
@@ -89,21 +159,40 @@ const Table = ({
               </div>
             )}
 
-            <Button
-              button_icon={<TbFileExport size={22} />}
-              button_name="Export"
-              bgColor="bg-white"
-              textColor="text-black"
-              paddingX={"px-4"}
-            />
+            <div className="">
+              <Button
+                button_icon={<TbFileExport size={22} />}
+                button_name="Export"
+                bgColor="bg-white"
+                textColor="text-black"
+                paddingX="px-4"
+                onClick={() => setShowExport((prev) => !prev)}
+              />
 
-            {/* <Button
-              button_icon={<BiFilterAlt size={22} />}
-              button_name="Filter"
-              bgColor="bg-white"
-              textColor="text-black"
-              paddingX={"px-4"}
-            /> */}
+              {showExport && (
+                <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-md z-50 mr-5">
+                  <button
+                    onClick={() => {
+                      setShowExport(false);
+                      handleExportExcel();
+                    }}
+                    className="w-full px-4 py-2 text-left hover:bg-gray-100"
+                  >
+                    Export to Excel
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setShowExport(false);
+                      handleExportPDF();
+                    }}
+                    className="w-full px-4 py-2 text-left hover:bg-gray-100"
+                  >
+                    Export to PDF
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <div
@@ -176,7 +265,7 @@ const Table = ({
                       className="border-b-3 border-light-blue text-center justify-center "
                     >
                       <td className="p-1 text-center rounded-l-lg">
-                        {index + 1}
+                        {(currentPage - 1) * itemsPerPage + index + 1}
                       </td>
                       {colomns.map((col, colIndex) => {
                         const value =

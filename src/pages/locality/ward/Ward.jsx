@@ -9,12 +9,19 @@ import EditWard from './EditWard';
 import { toast } from 'react-toastify';
 import { get } from 'mongoose';
 import Pagination from '../../../components/Pagination';
+import { useOutletContext } from 'react-router';
 
 const Ward = () => {
   const [wards, setWards] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
+  const { searchTerm } = useOutletContext();
+  const filteredWards = wards.filter((ward) =>
+    Object.values(ward).some((value) =>
+      String(value).toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
 
   const itemsPerPage = 8;
 
@@ -68,7 +75,7 @@ const Ward = () => {
         colomns={Columns}
         EditModal={EditWard}
         showViewButton={false}
-        tabledata={wards} 
+        tabledata={filteredWards} 
         loading={loading}
         onDelete={handleWarddelete}
         addButtonLabel="Add Ward"

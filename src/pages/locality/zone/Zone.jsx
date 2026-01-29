@@ -9,12 +9,19 @@ import { Edit } from "lucide-react";
 import EditZone from "./EditZone";
 import { toast } from "react-toastify";
 import Pagination from "../../../components/Pagination";
+import { useOutletContext } from "react-router";
 
 const Zone = () => {
   const [zones, setZones] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
+  const { searchTerm } = useOutletContext();
+  const filteredZones = zones.filter((zone) =>
+    Object.values(zone).some((value) =>
+      String(value).toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
   const itemsPerPage = 8;
   const getZones = async (page = 1) => {
     try {
@@ -69,7 +76,7 @@ const Zone = () => {
         sub_title="Zone"
         pagetitle="Zone"
         colomns={Columns}
-        tabledata={zones}
+        tabledata={filteredZones}
         showViewButton={false}
         addButtonLabel="Add Zone"
         EditModal={EditZone}

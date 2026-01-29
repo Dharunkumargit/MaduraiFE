@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import NavBar from "./NavBar";
 import { PiShoppingBagOpenBold } from "react-icons/pi";
 import { TbBuildingStore, TbReportAnalytics } from "react-icons/tb";
@@ -12,6 +12,7 @@ import { MdLocationOn, MdOutlineNotificationAdd } from "react-icons/md";
 
 const LayOut = () => {
   const location = useLocation();
+  const [searchTerm, setSearchTerm] = useState("");
   
   // ✅ NEW: Read YOUR exact localStorage structure
   const userData = JSON.parse(localStorage.getItem('user') || '{}');
@@ -163,7 +164,7 @@ const LayOut = () => {
 
   return (
     <div className=" font-roboto-flex w-full fixed h-screen ">
-      <NavBar />
+      <NavBar onSearch={setSearchTerm} />
       <div className="flex bg-light-blue h-11/12 ">
         <div className="px-6 pb-10 bg-light-blue overflow-auto no-scrollbar ">
           <ul>
@@ -226,7 +227,7 @@ const LayOut = () => {
 
         {/* ✅ OLD Content area - unchanged */}
         <div className="w-full pt-5 ml-3 overflow-auto no-scrollbar ">
-          <Outlet />
+          <Outlet context={{ searchTerm }} />
         </div>
 
    

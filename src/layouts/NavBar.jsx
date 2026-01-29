@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 
-const NavBar = () => {
+const NavBar = ({ onSearch }) => {
   const navigate = useNavigate();
 
   const [userInitials, setUserInitials] = useState("U");
@@ -72,6 +72,7 @@ const NavBar = () => {
               type="text"
               className="h-11 bg-transparent placeholder:text-dark-blue outline-0"
               placeholder="Search"
+              onChange={(e) => onSearch(e.target.value)}
             />
           </div>
         </div>
