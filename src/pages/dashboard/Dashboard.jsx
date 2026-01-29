@@ -3,7 +3,6 @@ import Title from "../../components/Title";
 import SummaryCard from "../../components/SummaryCard";
 import { HiOutlineTrash } from "react-icons/hi";
 import DonutChart from "../../components/DonutChart";
-
 import {
   Barcolors,
   Bardata,
@@ -14,7 +13,6 @@ import ChartTitle from "../../components/ChartTitle";
 import { TbReportAnalytics, TbTrashX } from "react-icons/tb";
 import axios from "axios";
 import { API } from "../../../const";
-import { IoTrashBinOutline } from "react-icons/io5";
 
 const Dashboard = () => {
   const [binsData, setBinsData] = useState([]);
@@ -26,48 +24,48 @@ const Dashboard = () => {
   const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(true);
 
-  // 🔥 LIVE DATA FETCH
+  // 🔥 LIVE DATA FETCH - 30s AUTO REFRESH
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-
         const response = await axios.get(`${API}/dashboard/all`);
-        const result = response.data; // ← THIS WAS THE BUG
+        console.log(response);
+        
+        const result = response.data;
 
         if (result.success) {
           const data = result.data;
 
-          // 🔥 SUMMARY CARDS - WORKING ✅
+          // 🔥 6 SUMMARY CARDS - FILL LEVELS + BINS
           setStats(data.stats || {});
 
-          // 🔥 ZONES TABLE - Fix mapping (missing zones data)
+          // 🔥 ZONES - 100% BINS ONLY
           setBinsData(
             data.topZones?.map((z, i) => ({
               id: i + 1,
               zone: z._id || "Unknown",
-              bin: z.binCount || 0,
-              waste: `${z.totalClearedTons || 0} Ton`,
-            })) || [],
+              fullBins: z.fullBinsCount || 0,
+            })) || []
           );
 
-          // 🔥 WARDS TABLE - Fix mapping
+          // 🔥 WARDS - 100% BINS ONLY (SAME FORMAT)
           setWardsData(
             data.topWards?.map((w, i) => ({
               ward: w._id || "Unknown",
-              bin: (w.binCount || 0).toString(),
-              waste: `${w.totalClearedTons || 0} Ton`,
-            })) || [],
+              fullBins: w.fullBinsCount || 0,
+            })) || []
           );
 
+          // 🔥 CHARTS
           setPieChartData(
             data.monthlyZones
               ?.sort((a, b) => b.totalClearedTons - a.totalClearedTons)
               ?.slice(0, 3)
               .map((z, i) => ({
-                name: `Zone ${i + 1}`,
+                name: z._id || `Zone ${i + 1}`,
                 value: z.totalClearedTons || 1,
-              })) || Piechartprojectdata,
+              })) || Piechartprojectdata
           );
 
           setBarChartData(
@@ -75,25 +73,25 @@ const Dashboard = () => {
               ?.sort((a, b) => b.totalClearedTons - a.totalClearedTons)
               ?.slice(0, 5)
               .map((z, i) => ({
-                name: `Zone ${i + 1}`,
+                name: z._id || `Zone ${i + 1}`,
                 value: z.totalClearedTons || 1,
-              })) || Bardata,
+              })) || Bardata
           );
 
-          // 🔥 HOTSPOTS - Use topLocations
+          // 🔥 HOTSPOTS
           setHotspotData(
             data.topLocations?.map((loc, i) => ({
               location: loc.location || "Unknown",
-              waste: `${loc.totalClearedTons || 0} Ton`, // Convert liters to tons
-            })) || [],
+              waste: `${loc.totalClearedTons || 0} Ton`,
+            })) || []
           );
 
-          // 🔥 ESCALATIONS
+          // 🔥 L1-L4 ESCALATIONS
           setEscalationData(
             data.escalations?.map((e, i) => ({
-              engineer: e._id || e.engineer || "Unknown",
-              escalation: (e.escalationCount || 0).toString(),
-            })) || [],
+              level: e.level ? `L${e.level}` : `L${i + 1}`,
+              count: e.count || 0,
+            })) || []
           );
         }
       } catch (error) {
@@ -104,7 +102,6 @@ const Dashboard = () => {
     };
 
     fetchDashboardData();
-    // 🔥 AUTO REFRESH EVERY 30s
     const interval = setInterval(fetchDashboardData, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -121,93 +118,76 @@ const Dashboard = () => {
     <div className="h-full mb-30 mr-3">
       <Title
         title="Dashboard"
-        sub_title="Main Dashboard"
+        sub_title="Live Bin Monitoring"
         page_title="Main Dashboard"
       />
 
       <div className="mt-4 space-y-3 overflow-y-auto h-full no-scrollbar">
-        {/* 🔥 SUMMARY CARDS - LIVE DATA */}
+        {/* 🔥 SAME 6-CARD STRUCTURE - lg:grid-cols-6 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3">
           <SummaryCard
-            status="Waste collected"
-            value={`${stats.waste?.totalWasteCollected || 0} Tons`}
-            title="Total Waste Collected"
-            icon={<IoTrashBinOutline size={20} />}
+            status="0-50% Bins"
+            value={stats.fillLevels?.zeroToFifty || 0}
+            title="Low Fill Bins"
+            icon={<TbTrashX size={20} />}
           />
           <SummaryCard
-            status="Waste Collected"
-            value={`${stats.waste?.currentMonthWaste || 0} Tons`}
-            title="Month Wise Waste Collected"
-            icon={<IoTrashBinOutline size={20} />}
+            status="51-75% Bins"
+            value={stats.fillLevels?.fiftyOneToSeventyFive || 0}
+            title="Medium Fill Bins"
+            icon={<TbTrashX size={20} />}
           />
           <SummaryCard
-            status="Waste Collected"
-            value={`${stats.waste?.monthlyAvgWaste || 0} Tons`}
-            title="Average Montly Waste Collected"
-            icon={<IoTrashBinOutline size={20} />}
+            status="76-99% Bins"
+            value={stats.fillLevels?.seventySixToNinetyNine || 0}
+            title="High Fill Bins"
+            icon={<TbTrashX size={20} />}
           />
           <SummaryCard
-            status="Active Bins"
-            value={stats.bins?.activeBins || 0}
-            title="Active Bins"
-            icon={<IoTrashBinOutline size={21} />}
+            status="100% Bins"
+            value={stats.fillLevels?.hundred || 0}
+            title="Critical Bins"
+            icon={<TbReportAnalytics size={21} />}
           />
           <SummaryCard
             status="InActive Bins"
             value={stats.bins?.inactiveBins || 0}
             title="InActive Bins"
-            icon={<IoTrashBinOutline size={21} />}
+            icon={<TbTrashX size={21} />}
           />
-
           <SummaryCard
             title="Total Bins"
             value={stats.bins?.totalBins || 0}
             status="All Bins"
-            icon={<IoTrashBinOutline size={21} />}
+            icon={<TbReportAnalytics size={21} />}
           />
         </div>
 
-        {/* 🔥 CHARTS - SAME UI */}
+        {/* 🔥 CHARTS + ZONE 100% BINS */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-          <DonutChart
-            title="HotSpot-Zone Wise"
-            data={Piechartdata}
-            colors={Projectcolor}
-          />
+          <DonutChart title="Monthly Zone Wise" data={Piechartdata} colors={Projectcolor} />
+          <ChartTitle title="Today Waste Collection" data={Barchartdata} colors={Barcolors} />
 
-          <ChartTitle
-            title="Daily Waste Collection"
-            data={Barchartdata}
-            colors={Barcolors}
-          />
-
-          {/* 🔥 ZONE TABLE - LIVE DATA */}
+          {/* 🔥 ZONE TABLE - 100% BINS ONLY (3 COLS) */}
           <div className="bg-lightest-blue rounded-xl border-3 border-white font-roboto-flex">
             <div className="mb-6 pt-6 px-5">
-              <h2 className="text-base font-semibold text-black">
-                Zone Wise Bins
-              </h2>
+              <h2 className="text-base font-semibold text-black">Zone Wise 100% Bins</h2>
             </div>
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white rounded-lg shadow-lg overflow-hidden mt-2">
                 <thead>
-                  <tr className="bg-white text-center text-black font-semibold border-b-3 border-light-blue ">
+                  <tr className="bg-white text-center text-black font-semibold border-b-3 border-light-blue">
                     <th className="py-4 px-4 text-sm">S.No</th>
                     <th className="py-4 px-4 text-sm">Zone</th>
-                    <th className="py-4 px-4 text-sm">Bins</th>
-                    <th className="py-4 px-4 text-sm">Waste Collected</th>
+                    <th className="py-4 px-4 text-sm">100% Bins</th>
                   </tr>
                 </thead>
                 <tbody>
                   {binsData.map((bin, index) => (
-                    <tr
-                      key={bin.id}
-                      className="text-gray-600 border-b-2 border-light-blue last:border-none text-center text-sm"
-                    >
+                    <tr key={bin.id} className="text-gray-600 border-b-2 border-light-blue last:border-none text-center text-sm">
                       <td className="py-3 px-4 text-sm">{index + 1}</td>
                       <td className="py-3 px-4 text-sm">{bin.zone}</td>
-                      <td className="py-3 px-4 text-sm">{bin.bin}</td>
-                      <td className="py-3 px-4 text-sm">{bin.waste}</td>
+                      <td className="py-3 px-4 text-sm font-bold text-red-600">{bin.fullBins}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -216,49 +196,26 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* 🔥 TABLES - LIVE DATA (SAME UI) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
-          {/* TOP 10 WARDS */}
-          <div className="bg-lightest-blue rounded-lg sm:rounded-xl border-2 sm:border-3 border-white font-roboto-flex w-full">
-            <h2 className="text-sm sm:text-base font-semibold p-3 sm:p-4 text-black">
-              Top 10 Wards
-            </h2>
+        {/* 🔥 TABLES - 100% BINS FOR WARDS TOO */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+          {/* 🔥 WARDS - 100% BINS ONLY (3 COLS) */}
+          <div className="bg-lightest-blue rounded-xl border-3 border-white h-74 font-roboto-flex">
+            <h2 className="text-base font-semibold p-4 text-black">Top Wards 100% Bins</h2>
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white rounded-lg shadow-xl overflow-hidden">
                 <thead>
-                  <tr className="bg-white text-center text-black font-bold border-b-2 sm:border-b-3 border-light-blue">
-                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
-                      S.no
-                    </th>
-                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
-                      Ward
-                    </th>
-                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
-                      Bins
-                    </th>
-                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
-                      Waste
-                    </th>
+                  <tr className="bg-white text-center text-black font-bold border-b-3 border-light-blue text-sm">
+                    <th className="py-4 px-5 text-sm">S.No</th>
+                    <th className="py-4 px-5 text-sm">Ward</th>
+                    <th className="py-4 px-5 text-sm">100% Bins</th>
                   </tr>
                 </thead>
                 <tbody>
                   {wardsdata.map((bin, index) => (
-                    <tr
-                      key={index}
-                      className="text-light-grey border-b border-light-blue last:border-none text-center"
-                    >
-                      <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
-                        {index + 1}
-                      </td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
-                        {bin.ward}
-                      </td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
-                        {bin.bin}
-                      </td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
-                        {bin.waste}
-                      </td>
+                    <tr key={index} className="text-light-grey border-b-2 border-light-blue last:border-none text-center text-sm">
+                      <td className="py-3 px-5 text-sm">{index + 1}</td>
+                      <td className="py-3 px-5 text-sm">{bin.ward}</td>
+                      <td className="py-3 px-5 text-sm font-bold text-red-600">{bin.fullBins}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -266,43 +223,24 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* TOP 10 HOTSPOT */}
-          <div className="bg-lightest-blue rounded-lg sm:rounded-xl border-2 sm:border-3 border-white font-roboto-flex w-full">
-            <h2 className="text-sm sm:text-base font-semibold p-3 sm:p-4 text-black">
-              Top 10 Hotspot
-            </h2>
-            <div className="overflow-x-auto no-scrollbar">
+          {/* 🔥 HOTSPOTS - SAME */}
+          <div className="bg-lightest-blue rounded-xl border-3 border-white h-74 font-roboto-flex">
+            <h2 className="text-base font-semibold p-4 text-black">Top 10 Hotspots</h2>
+            <div className="overflow-x-auto">
               <table className="min-w-full bg-white rounded-lg overflow-hidden">
                 <thead>
-                  <tr className="bg-white text-center text-black font-semibold border-b-2 sm:border-b-3 border-light-blue">
-                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
-                      S.no
-                    </th>
-                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
-                      Location
-                    </th>
-                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
-                      Waste
-                    </th>
+                  <tr className="bg-white text-center text-black font-semibold border-b-3 border-light-blue text-sm">
+                    <th className="py-4 px-5 text-sm">S.No</th>
+                    <th className="py-4 px-5 text-sm">Location</th>
+                    <th className="py-4 px-5 text-sm">Waste Collected</th>
                   </tr>
                 </thead>
                 <tbody>
                   {hotspotdata.map((bin, index) => (
-                    <tr
-                      key={index}
-                      className="text-light-grey border-b border-light-blue last:border-none text-center"
-                    >
-                      <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
-                        {index + 1}
-                      </td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
-                        <span className="block truncate max-w-[100px] sm:max-w-[150px] md:max-w-none mx-auto">
-                          {bin.location}
-                        </span>
-                      </td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
-                        {bin.waste}
-                      </td>
+                    <tr key={index} className="text-light-grey border-b-2 border-light-blue last:border-none text-center text-sm">
+                      <td className="py-3 px-5 text-sm">{index + 1}</td>
+                      <td className="py-3 px-5 text-sm">{bin.location}</td>
+                      <td className="py-3 px-5 text-sm">{bin.waste}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -310,49 +248,24 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* TOP 10 ESCALATION */}
-          <div className="bg-lightest-blue rounded-lg sm:rounded-xl border-2 sm:border-3 border-white font-roboto-flex w-full md:col-span-2 xl:col-span-1">
-            <h2 className="text-sm sm:text-base font-semibold p-3 sm:p-4 text-black">
-              Top 10 Escalation
-            </h2>
+          {/* 🔥 L1-L4 ESCALATIONS */}
+          <div className="bg-lightest-blue rounded-xl border-3 border-white h-74">
+            <h2 className="text-base font-semibold p-4 text-black">Escalation L1-L4</h2>
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white rounded-lg overflow-hidden">
                 <thead>
-                  <tr className="bg-white text-center text-black font-semibold border-b-2 sm:border-b-3 border-light-blue">
-                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
-                      S.no
-                    </th>
-                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
-                      Bin ID
-                    </th>
-                    <th className="py-2 sm:py-4 px-3 sm:px-5 text-xs sm:text-sm">
-                      Level
-                    </th>
+                  <tr className="bg-white text-center text-black font-semibold border-b-3 border-light-blue text-sm">
+                    <th className="py-4 px-5 text-sm">Level</th>
+                    <th className="py-4 px-5 text-sm">Count</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="text-light-grey border-b border-light-blue text-center">
-                    <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
-                      1
-                    </td>
-                    <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
-                      MSB006
-                    </td>
-                    <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
-                      75
-                    </td>
-                  </tr>
-                  <tr className="text-light-grey text-center">
-                    <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
-                      2
-                    </td>
-                    <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
-                      MSB007
-                    </td>
-                    <td className="py-2 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm">
-                      85
-                    </td>
-                  </tr>
+                  {escalationdata.map((bin, index) => (
+                    <tr key={index} className="text-light-grey border-b-2 border-light-blue last:border-none text-center text-sm">
+                      <td className="py-3 px-5 text-sm font-bold text-orange-600">{bin.level}</td>
+                      <td className="py-3 px-5 text-sm font-bold">{bin.count}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

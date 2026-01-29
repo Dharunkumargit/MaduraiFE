@@ -69,7 +69,7 @@ const Binwisereport = () => {
     
     autoTable(doc, {
       startY: 25,
-      head: [["S.no", "Bin ID", "Ward", "Zone", "Location", "Capacity", "Tons Cleared", "Response Time"]],
+      head: [["S.no", "Location ID", "Ward", "Zone", "Location", "Capacity", "Tons Cleared", "Response Time"]],
       body: binsData.map((item, index) => [
         index + 1,
         item.binid,
@@ -150,7 +150,7 @@ const Binwisereport = () => {
         <div className="flex items-center justify-between">
           <img src={logo} alt="Logo" className="w-22 rounded-full" />
           <div className="text-center">
-            <h2 className="text-xl font-semibold">Bin-wise Report</h2>
+            <h2 className="text-xl font-semibold">Location-wise Report</h2>
             <p className="text-gray-500 text-sm">
               {formatDisplayDate(fromDate)} - {formatDisplayDate(toDate)}
             </p>
@@ -169,7 +169,7 @@ const Binwisereport = () => {
             <thead className="bg-[#EBEBEB]">
               <tr>
                 <th className="border p-4">S.no</th>
-                <th className="border p-4">Bin ID</th>
+                <th className="border p-4">Location ID</th>
                 <th className="border p-4">Ward</th>
                 <th className="border p-4">Zone</th>
                 <th className="border p-4">Location</th>

@@ -39,10 +39,10 @@ const Zone = () => {
 
   const Columns = [
     { label: "Zone Name", key: "zonename" },
-    { label: "Total Bins", key: "totalbins" },
-    { label: "Active Bins", key: "activebins" },
+    { label: "Total Location", key: "totalbins" },
+    { label: "Active Location", key: "activebins" },
 
-    { label: "Inactive Bins", key: "inactivebins" },
+    { label: "Inactive Location", key: "inactivebins" },
     { label: "Status", key: "status" },
   ];
   const handleZonedelete = async (id) => {
@@ -65,7 +65,7 @@ const Zone = () => {
   return (
     <div>
       <Table
-        title="Locality"
+        title="Master"
         sub_title="Zone"
         pagetitle="Zone"
         colomns={Columns}

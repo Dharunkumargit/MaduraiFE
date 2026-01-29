@@ -27,7 +27,7 @@ const Table = ({
   AddModal,
   showActions = true,
   EditModal,
-  loading=false,
+  loading = false,
   onDelete,
   editroutepoint,
   onEdit,
@@ -77,9 +77,7 @@ const Table = ({
                   button_icon={addButtonIcon}
                   onClick={() => {
                     if (addroutepoint) {
-                      navigate(`${addroutepoint}`
-                        
-                      );
+                      navigate(`${addroutepoint}`);
                     }
                     if (AddModal === true) {
                       setShowAdd(false);
@@ -99,13 +97,13 @@ const Table = ({
               paddingX={"px-4"}
             />
 
-            <Button
+            {/* <Button
               button_icon={<BiFilterAlt size={22} />}
               button_name="Filter"
               bgColor="bg-white"
               textColor="text-black"
               paddingX={"px-4"}
-            />
+            /> */}
           </div>
         </div>
         <div
@@ -168,11 +166,10 @@ const Table = ({
                       colSpan={colomns.length + 2}
                       className="text-center py-8"
                     >
-                     <Loader />
+                      <Loader />
                     </td>
                   </tr>
-                ) :
-                sortedItems.length > 0 ? (
+                ) : sortedItems.length > 0 ? (
                   sortedItems.map((item, index) => (
                     <tr
                       key={index}
@@ -209,11 +206,11 @@ const Table = ({
                             ) : isFilledCol ? (
                               <span
                                 className={`font-medium ${
-                                  filledValue === 100
+                                  filledValue > 75
                                     ? "text-red-700"
-                                    : filledValue > 20
-                                    ? "text-green-700"
-                                    : "text-yellow-600"
+                                    : filledValue <= 49
+                                      ? "text-green-700"
+                                      : "text-yellow-600"
                                 }`}
                               >
                                 {value}
@@ -257,19 +254,17 @@ const Table = ({
                             {showViewButton && (
                               <button
                                 onClick={() => {
-                                
                                   if (routepoint) {
                                     navigate(`${routepoint}`, {
-                                      state: { item ,},
+                                      state: { item },
                                     });
                                   }
                                   if (ViewModel === true) {
                                     setShowView(false);
-                                  }  else {
+                                  } else {
                                     setSelectedItem(item);
                                     setShowView(true);
-                                  } 
-
+                                  }
                                 }}
                                 className="cursor-pointer bg-[#BAFFBA] p-1.5 rounded"
                               >

@@ -41,9 +41,9 @@ const Ward = () => {
     const Columns = [
         { label: "Zone", key: "zonename" },
         { label: "Ward", key: "wardname" },
-        { label: "Total Bins", key: "totalbins" },
-        { label: "Active Bins", key: "activebins" },
-        { label: "Inactive Bins", key: "inactivebins" },
+        { label: "Total Location", key: "totalbins" },
+        { label: "Active Location", key: "activebins" },
+        { label: "Inactive Location", key: "inactivebins" },
         { label: "Status", key: "status" },
       ];
 
@@ -63,7 +63,7 @@ const Ward = () => {
       }
   return (
     <div>
-        <Table title="Locality" sub_title="Ward" 
+        <Table title="Master" sub_title="Ward" 
         pagetitle="Ward"
         colomns={Columns}
         EditModal={EditWard}

@@ -8,7 +8,7 @@ import { GrGroup } from "react-icons/gr";
 import { NavLink, Outlet, useLocation } from "react-router";
 import { Settings } from "lucide-react";
 import { HiOutlineTrash } from "react-icons/hi";
-import { MdOutlineNotificationAdd } from "react-icons/md";
+import { MdLocationOn, MdOutlineNotificationAdd } from "react-icons/md";
 
 const LayOut = () => {
   const location = useLocation();
@@ -35,10 +35,10 @@ const LayOut = () => {
       feature: "Dashboard" // ✅ NEW: For RBAC
     },
     {
-      title: "Bins",
-      icon: <HiOutlineTrash size={25} />,
-      to: "/bins",
-      feature: "Bins"
+      title: "Location",
+      icon: <MdLocationOn size={25} />,
+      to: "/location",
+      feature: "Location"
     },
     {
       title: "Escalation",
@@ -47,20 +47,20 @@ const LayOut = () => {
       feature: "Escalation"
     },
     {
-      title: "Locality",
+      title: "Master",
       icon: <LuLayoutDashboard size={25} />,
-      to: "/locality/zone",
-      feature: "Locality",
+      to: "/master/zone",
+      feature: "master",
       nested: [
         {
           title: "Zone",
           icon: <RiUserAddLine size={23} />,
-          to: "/locality/zone",
+          to: "/master/zone",
         },
         {
           title: "Ward",
           icon: <RiUserAddLine size={23} />,
-          to: "/locality/ward",
+          to: "/master/ward",
         },
       ]
     },
@@ -79,8 +79,8 @@ const LayOut = () => {
           to: "/reports/wardwisereport",
         },
         {
-          title: "Bin-wise Report",
-          to: "/reports/binwisereport",
+          title: "Location-wise Report",
+          to: "/reports/locationwisereport",
         },
         {
           title: "Employee-wise Report",
@@ -147,9 +147,9 @@ const LayOut = () => {
 
   // ✅ NEW: Nested sidebar visibility (your logic + RBAC)
   const isNestedSidebarVisible = (menuTitle, pathname) => {
-    if (menuTitle === "Bins") {
+    if (menuTitle === "Location") {
       return (
-        pathname.startsWith("/bins/") && pathname !== "/bins"
+        pathname.startsWith("/location/") && pathname !== "/location"
       );
     }
     if (menuTitle === "Escalation") {

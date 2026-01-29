@@ -146,7 +146,7 @@ const AddNewBin = ({ onclose,  }) => {
           >
             <IoClose className="size-[24px]" />
           </button>
-          <h1 className="text-center font-medium text-2xl py-2">Add New Bin</h1>
+          <h1 className="text-center font-medium text-2xl py-2">Add New Location</h1>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-7 px-6 py-6">
               <div className="space-y-4">

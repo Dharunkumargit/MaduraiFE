@@ -1,9 +1,9 @@
-import React from 'react'
-import Title from '../../components/Title'
-import { TbFileExport } from 'react-icons/tb'
-import { BiFilterAlt } from 'react-icons/bi'
-import Button from '../../components/Button'
-import { useLocation } from 'react-router'
+import React from "react";
+import Title from "../../components/Title";
+import { TbFileExport } from "react-icons/tb";
+import { BiFilterAlt } from "react-icons/bi";
+import Button from "../../components/Button";
+import { useLocation } from "react-router";
 import logo from "../../assets/images/Location.png";
 import bin1 from "../../assets/images/bin1.png";
 import bin2 from "../../assets/images/bin2.png";
@@ -11,50 +11,30 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
 const ViewEsclation = () => {
-    const { state } = useLocation();
+  const { state } = useLocation();
   const user = state?.item;
   if (!user) {
     return <p className="p-4">No user data found.</p>;
   }
   const staticLat = 9.9252;
-const staticLong = 78.1198;
+  const staticLong = 78.1198;
 
   const mainFields = [
-    
     { label: "Bin ID", value: user.binid },
     { label: "Ward", value: user.ward },
-     {label: "Zone", value: user.zone },
-    { label: "Engineer", value: user.engineer },
-    { label: "Escalation Level", value: user.escalationlevel },
+    { label: "Zone", value: user.zone },
+    // { label: "Engineer", value: user.engineer },
+    { label: "Escalation Level", value: user.filled },
     { label: "Location", value: "Arappalayam" },
-    { label: "Last Alerted", value: "10.00 am" }, 
-    { label: "Bins", value: "5" },
+    { label: "Last Alerted", value: "10.00 am" },
+    // { label: "Bins", value: "5" },
     { label: "Latest Photos", value: user.lastestphotos },
-    
   ];
 
-  const subFields = [
-    { label: "Comment", value: "10.10.2025,10.23am" },
-    { label:"Comment",value:"10.10.2025,10.23am" },
-  ]
   return (
     <div>
-        <div className="flex justify-between ">
+      <div className="flex justify-between ">
         <Title title="Dashboard" page_title="Escalation" sub_title="Table" />
-        <div className="flex items-center gap-2 mr-4">
-          <Button
-            button_icon={<TbFileExport size={22} />}
-            button_name="Export"
-            bgColor="bg-white"
-            textColor="text-dark-brown"
-          />
-          <Button
-            button_icon={<BiFilterAlt size={22} />}
-            button_name="Filter"
-            bgColor="bg-white"
-            textColor="text-dark-brown"
-          />
-        </div>
         
       </div>
       <div className="bg-lightest-blue p-4 rounded-2xl space-y-3 border-4 border-white text-sm mt-4 mr-4">
@@ -63,28 +43,25 @@ const staticLong = 78.1198;
             <React.Fragment key={idx}>
               <p className="col-span-4 font-medium">{field.label}</p>
               <div className="col-span-6 text-light-grey">
-              {field.label === "Location" ? (
-  <div className="space-y-2">
+                {field.label === "Location" ? (
+                  <div className="space-y-2">
+                    <MapContainer
+                      center={[staticLat, staticLong]}
+                      zoom={14}
+                      style={{ height: "200px", width: "60%" }}
+                    >
+                      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-    <MapContainer
-      center={[staticLat, staticLong]}
-      zoom={14}
-      style={{ height: "200px", width: "60%" }}
-    >
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                      <Marker position={[staticLat, staticLong]}>
+                        <Popup></Popup>
+                      </Marker>
+                    </MapContainer>
 
-      <Marker position={[staticLat, staticLong]}>
-        <Popup>Escalation Bin Location</Popup>
-      </Marker>
-
-    </MapContainer>
-
-    <p className="text-sm text-light-grey font-medium">
-      {field.value}
-    </p>
-
-  </div>
-)  : field.label === "Latest Photos" ? (
+                    <p className="text-sm text-light-grey font-medium">
+                      {field.value}
+                    </p>
+                  </div>
+                ) : field.label === "Latest Photos" ? (
                   <div className="flex gap-4 mt-2">
                     <img
                       src={bin1}
@@ -100,7 +77,8 @@ const staticLong = 78.1198;
                 ) : (
                   <span
                     className={`text-sm ${
-                      field.label === "Escalation Level" && field.value === "Level 1"
+                      field.label === "Escalation Level" &&
+                      field.value === "Level 1"
                         ? "text-red-600 font-medium"
                         : "text-light-grey font-medium"
                     }`}
@@ -113,19 +91,8 @@ const staticLong = 78.1198;
           ))}
         </div>
       </div>
-      <div className="bg-lightest-blue p-4 rounded-2xl space-y-3 border-4 border-white text-sm mt-3 mr-4 mb-14">
-        <div className="grid grid-cols-11 gap-2 items-center mt-1">
-        {subFields.map((field, idx) => (
-            <React.Fragment key={idx}>
-              <p className="col-span-4 font-medium">{field.label}</p>
-              <p className="col-span-6 text-light-grey">{field.value}</p>
-            </React.Fragment>
-          ))}
-
-        </div>
-       </div> 
     </div>
-  )
-}
+  );
+};
 
-export default ViewEsclation
+export default ViewEsclation;

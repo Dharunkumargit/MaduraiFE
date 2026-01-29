@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router";
 
-import LayOut from "../layouts/Layout";
+import LayOut from "../layouts/LayOut";
 import Dashboard from "../pages/dashboard/Dashboard";
 import Bins from "../pages/bins/Bins";
 import Escalation from "../pages/escalation/Escalation";
@@ -42,15 +42,15 @@ const Approutes = () => {
               <Route index element={<Dashboard />} />
               <Route path="profile" element={<Profile />} />
             </Route>
-            <Route path="/bins">
+            <Route path="/location">
               <Route index element={<Bins />} />
-              <Route path="viewbins" element={<ViewBins />} />
+              <Route path="viewlocation" element={<ViewBins />} />
             </Route>
             <Route path="/escalation">
               <Route index element={<Escalation />} />
               <Route path="viewescalation" element={<ViewEsclation />} />
             </Route>
-            <Route path="/locality">
+            <Route path="/master">
               <Route path="zone">
                 <Route index element={<Zone />} />
               </Route>
@@ -65,7 +65,7 @@ const Approutes = () => {
               <Route path="wardwisereport">
                 <Route index element={<Wardwiaereport />} />
               </Route>
-              <Route path="binwisereport">
+              <Route path="locationwisereport">
                 <Route index element={<Binwisereport />} />
               </Route>
               <Route path="employeewisereport">

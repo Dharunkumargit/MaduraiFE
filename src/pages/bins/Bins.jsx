@@ -2,93 +2,85 @@ import React, { useEffect, useState } from "react";
 import Table from "../../components/Table";
 import { HiOutlineTrash } from "react-icons/hi";
 import AddNewBin from "./AddNewBin";
+import EditBins from "./EditBins";
+import Pagination from "../../components/Pagination";
 import axios from "axios";
 import { API } from "../../../const";
 import { toast } from "react-toastify";
-import EditBins from "./EditBins";
-import Pagination from "../../components/Pagination";
 
 const Bins = () => {
   const [binData, setBinData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(false);
   const [totalItems, setTotalItems] = useState(0);
+  const [loading, setLoading] = useState(false);
+
   const itemsPerPage = 9;
-  // 1️⃣ Fetch bins from backend
-  // -----------------------
- 
 
+  // ✅ IST Formatter
+  const formatISTDateTimeManual = (utcDate) => {
+    if (!utcDate) return "-";
+    const date = new Date(utcDate);
+    date.setHours(date.getHours() - 5);
+    date.setMinutes(date.getMinutes() - 30);
 
-  const fetchbins = async (page = 1) => {
+    return date.toLocaleString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+
+  // ✅ Fetch bins
+  const fetchBins = async (page = 1) => {
     try {
       setLoading(true);
-
       const res = await axios.get(
-        `${API}/bins/getallbins?page=${page}&limit=${itemsPerPage}`,
+        `${API}/bins/getallbins?page=${page}&limit=${itemsPerPage}`
       );
 
-      const formattedData = res.data.data.map((bin) => ({
+      const formatted = res.data.data.map((bin) => ({
         ...bin,
-        lastReportedAt: bin.lastReportedAt
-          ? new Date(bin.lastReportedAt).toLocaleString("en-IN", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            })
-          : "-",
+        lastReportedAt: formatISTDateTimeManual(bin.lastReportedAt),
       }));
-     
-      setBinData(formattedData);
-      setTotalItems(res.data.pagination.totalItems);
-      setCurrentPage(res.data.pagination.currentPage);
-    } catch (error) {
-      console.log("Bin Fetch Error:", error);
+
+      setBinData(formatted);
+      setTotalItems(res.data.totalItems);
+      setCurrentPage(res.data.currentPage);
+    } catch (err) {
+      console.error("Fetch bins error", err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchbins(currentPage);
+    fetchBins(currentPage);
   }, [currentPage]);
- 
- console.log("Bin Data:", binData);
- 
-  // -----------------------
-  // 3️⃣ Delete a bin
-  // -----------------------
+
+  // ✅ Delete bin
   const handleDeleteBin = async (id) => {
     if (!window.confirm("Are you sure you want to delete this bin?")) return;
 
     try {
       await axios.delete(`${API}/bins/deletebinbyid/${id}`);
       toast.success("Bin deleted successfully");
-
-      // 🧠 last item on page logic
-      if (binData.length === 1 && currentPage > 1) {
-        setCurrentPage((prev) => prev - 1);
-      } else {
-        fetchbins(currentPage);
-      }
-    } catch (error) {
+      fetchBins(currentPage); // 🔥 important
+    } catch (err) {
       toast.error("Failed to delete bin");
     }
   };
 
-  // -----------------------
-  // 4️⃣ Table columns
-  // -----------------------
   const Columns = [
-    { label: "Bin ID", key: "binid" },
+    { label: "Location ID", key: "binid" },
     { label: "Zone", key: "zone" },
     { label: "Ward", key: "ward" },
-    { label: "Bin Type", key: "bintype" },
     { label: "Location", key: "location" },
-    { label: "Filled%", key: "filled" },
-    { label: "Last Updated", key: "lastReportedAt" }, // use frontend IST converted field
+    { label: "Filled %", key: "filled" },
+    { label: "Last Updated", key: "lastReportedAt" },
+    { label: "Total Cleared Events", key: "totalClearedEvents" },
     { label: "Status", key: "status" },
   ];
 
@@ -98,25 +90,26 @@ const Bins = () => {
         title="Bins"
         sub_title="Table"
         pagetitle="Bins"
-        addButtonLabel="Add New Bin"
+        addButtonLabel="Add New Location"
         addButtonIcon={<HiOutlineTrash size={22} />}
         colomns={Columns}
         tabledata={binData}
         onDelete={handleDeleteBin}
+        loading={loading}
+        EditModal={EditBins}
+        ViewModel={true}
+        routepoint="viewlocation"
         AddModal={(modalProps) => (
           <AddNewBin
             {...modalProps}
             onclose={() => {
               modalProps.onclose();
-              fetchbins(); // refresh table immediately after adding
+              fetchBins(currentPage);
             }}
           />
         )}
-        ViewModel={true}
-        EditModal={EditBins}
-        loading={loading}
-        routepoint={"viewbins"}
       />
+
       <Pagination
         totalItems={totalItems}
         itemsPerPage={itemsPerPage}

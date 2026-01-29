@@ -15,7 +15,24 @@ L.Icon.Default.mergeOptions({
   shadowUrl:
     "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
-
+const formatISTDateTimeManual = (utcDate) => {
+  if (!utcDate) return "-";
+  const date = new Date(utcDate);
+  
+  // ✅ Subtract 5:30 for IST (UTC → IST)
+  date.setHours(date.getHours() - 5);
+  date.setMinutes(date.getMinutes() - 30);
+  
+  return date.toLocaleString("en-IN", {
+    // Full date + time format
+    day: "numeric",
+    month: "short", 
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true
+  });
+};
 const ViewBins = () => {
   const { state } = useLocation();
   const bin = state?.item; // data passed from table
@@ -40,15 +57,8 @@ const ViewBins = () => {
 
   const latest = sortedUpdates[0];
   const filled = latest?.fill_level ?? bin.filled ?? "-";
-  const lastUpdated = latest?.timestamp
-    ? new Date(latest.timestamp).toLocaleString("en-IN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : "-";
+  const lastUpdated = formatISTDateTimeManual(latest?.timestamp);
+
 
   const mainFields = [
     { label: "Status", value: bin.status },

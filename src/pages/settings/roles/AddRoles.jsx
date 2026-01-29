@@ -16,9 +16,9 @@ const AddRoles = () => {
 
   const settingsOptions = [
     "Dashboard",
-    "Bins",
+    "Location",
     "Escalation",
-    "Locality",
+    "Master",
     "Reports",
     
     "EmployeeManagement",
