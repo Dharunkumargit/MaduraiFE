@@ -80,7 +80,7 @@ const Bins = () => {
     { label: "Location", key: "location" },
     { label: "Filled %", key: "filled" },
     { label: "Last Updated", key: "lastReportedAt" },
-    { label: "Total Cleared Events", key: "totalClearedEvents" },
+    { label: "TCC", key: "totalClearedEvents" },
     { label: "Status", key: "status" },
   ];
 
