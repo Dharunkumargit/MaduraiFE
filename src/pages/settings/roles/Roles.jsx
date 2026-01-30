@@ -64,6 +64,8 @@ const Roles = () => {
   return (
     <div>
       <Table
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
         title="Settings"
         sub_title="Roles"
         pagetitle="Roles"

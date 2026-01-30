@@ -27,7 +27,7 @@ const Table = ({
   tabledata,
   colomns = [],
   currentPage = 1,        
-  itemsPerPage = 10,
+  itemsPerPage ,
   showEditButton = true,
   showDeleteButton = true,
   showViewButton = true,
@@ -273,7 +273,7 @@ const Table = ({
                         const keyName = col.key.toLowerCase();
                         const isStatusCol = keyName === "status";
                         const isFilledCol = keyName === "filled";
-                        const isEscalationLevel = keyName === "escalationlevel";
+                        const isEscalationLevel = keyName === "visibleEscalations";
 
                         const filledValue =
                           isFilledCol && typeof value === "string"

@@ -1,35 +1,33 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../components/Table";
-import { HiOutlineTrash } from "react-icons/hi";
+import Pagination from "../../components/Pagination";
 import AddNewBin from "./AddNewBin";
 import EditBins from "./EditBins";
-import Pagination from "../../components/Pagination";
 import axios from "axios";
 import { API } from "../../../const";
 import { toast } from "react-toastify";
-import { useOutletContext } from "react-router";
+import { HiOutlineTrash } from "react-icons/hi";
+import { useOutletContext, useSearchParams } from "react-router";
 
 const Bins = () => {
-  const [binData, setBinData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
   const { searchTerm } = useOutletContext();
 
-  const itemsPerPage = 9;
-  const filteredBins = binData.filter((bin) =>
-    Object.values(bin).some((value) =>
-      String(value).toLowerCase().includes(searchTerm.toLowerCase()),
-    ),
-  );
+  const [binData, setBinData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // ✅ IST Formatter
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+
+  const itemsPerPage = 9;
+  const filter = searchParams.get("filter") || "all";
+
+  // 🔹 IST DATE FORMAT
   const formatISTDateTimeManual = (utcDate) => {
     if (!utcDate) return "-";
     const date = new Date(utcDate);
     date.setHours(date.getHours() - 5);
     date.setMinutes(date.getMinutes() - 30);
-
     return date.toLocaleString("en-IN", {
       day: "numeric",
       month: "short",
@@ -40,13 +38,18 @@ const Bins = () => {
     });
   };
 
-  // ✅ Fetch bins
+  // 🔹 FETCH BINS (SERVER PAGINATION)
   const fetchBins = async (page = 1) => {
     try {
       setLoading(true);
-      const res = await axios.get(
-        `${API}/bins/getallbins?page=${page}&limit=${itemsPerPage}`,
-      );
+
+      const res = await axios.get(`${API}/bins/getallbins`, {
+        params: {
+          filter,
+          page,
+          limit: itemsPerPage,
+        },
+      });
 
       const formatted = res.data.data.map((bin) => ({
         ...bin,
@@ -57,26 +60,40 @@ const Bins = () => {
       setTotalItems(res.data.totalItems);
       setCurrentPage(res.data.currentPage);
     } catch (err) {
-      console.error("Fetch bins error", err);
+      toast.error("Failed to fetch bins");
     } finally {
       setLoading(false);
     }
   };
 
+  // 🔹 FILTER CHANGE
+  useEffect(() => {
+    setCurrentPage(1);
+    fetchBins(1);
+  }, [filter]);
+
+  // 🔹 PAGE CHANGE
   useEffect(() => {
     fetchBins(currentPage);
   }, [currentPage]);
 
-  // ✅ Delete bin
+  // 🔹 SEARCH (CLIENT SIDE)
+  const filteredBins = binData.filter((bin) =>
+    Object.values(bin).some((value) =>
+      String(value).toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
+
+  // 🔹 DELETE BIN
   const handleDeleteBin = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this bin?")) return;
+    if (!window.confirm("Are you sure?")) return;
 
     try {
       await axios.delete(`${API}/bins/deletebinbyid/${id}`);
-      toast.success("Bin deleted successfully");
-      fetchBins(currentPage); // 🔥 important
+      toast.success("Bin deleted");
+      fetchBins(currentPage);
     } catch (err) {
-      toast.error("Failed to delete bin");
+      toast.error("Delete failed");
     }
   };
 
@@ -84,39 +101,40 @@ const Bins = () => {
     { label: "Location ID", key: "binid" },
     { label: "Zone", key: "zone" },
     { label: "Ward", key: "ward" },
+    // { label: "Bin Type", key: "bintype" },
     { label: "Location", key: "location" },
-    { label: "Filled %", key: "filled" },
-    { label: "Last Updated", key: "lastReportedAt" },
+    { label: "Filled%", key: "filled" },
     { label: "TCC", key: "totalClearedEvents" },
+    { label: "Last Updated", key: "lastReportedAt" },
     { label: "Status", key: "status" },
   ];
 
   return (
-    <div>
+    <div className="">
       <Table
         title="Bins"
         sub_title="Table"
         pagetitle="Bins"
-        addButtonLabel="Add New Location"
-        addButtonIcon={<HiOutlineTrash size={22} />}
         colomns={Columns}
         tabledata={filteredBins}
-        currentPage={currentPage} // ✅ ADD
-        itemsPerPage={itemsPerPage}
-        onDelete={handleDeleteBin}
         loading={loading}
-        EditModal={EditBins}
-        ViewModel={true}
-        routepoint="viewlocation"
-        AddModal={(modalProps) => (
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
+        addButtonLabel="Add New Bin"
+        addButtonIcon={<HiOutlineTrash size={22} />}
+        onDelete={handleDeleteBin}
+        AddModal={(props) => (
           <AddNewBin
-            {...modalProps}
+            {...props}
             onclose={() => {
-              modalProps.onclose();
+              props.onclose();
               fetchBins(currentPage);
             }}
           />
         )}
+        EditModal={EditBins}
+        routepoint="viewlocation"
+        ViewModel
       />
 
       <Pagination

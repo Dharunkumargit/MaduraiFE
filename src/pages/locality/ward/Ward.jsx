@@ -23,7 +23,7 @@ const Ward = () => {
     )
   );
 
-  const itemsPerPage = 8;
+  const itemsPerPage = 9;
 
   const getWards = async (page = 1) => {
     try {
@@ -70,7 +70,10 @@ const Ward = () => {
       }
   return (
     <div>
-        <Table title="Master" sub_title="Ward" 
+        <Table 
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
+        title="Master" sub_title="Ward" 
         pagetitle="Ward"
         colomns={Columns}
         EditModal={EditWard}

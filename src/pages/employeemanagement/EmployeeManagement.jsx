@@ -83,6 +83,8 @@ const EmployeeManagement = () => {
   return (
     <div>
       <Table
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
         title="Employee Management"
         sub_title="Table"
         pagetitle="Employee Management"

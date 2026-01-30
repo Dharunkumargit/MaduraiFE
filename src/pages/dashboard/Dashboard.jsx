@@ -13,6 +13,7 @@ import ChartTitle from "../../components/ChartTitle";
 import { TbReportAnalytics, TbTrashX } from "react-icons/tb";
 import axios from "axios";
 import { API } from "../../../const";
+import { useNavigate } from "react-router";
 
 const Dashboard = () => {
   const [binsData, setBinsData] = useState([]);
@@ -23,6 +24,12 @@ const Dashboard = () => {
   const [Barchartdata, setBarChartData] = useState([]);
   const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); // 🔥 NAVIGATION HOOK
+
+  // 🔥 FILTER NAVIGATION FUNCTION
+  const handleFilterClick = (percentageRange) => {
+    navigate(`/bins?filter=${percentageRange}`);
+  };
 
   // 🔥 LIVE DATA FETCH - 30s AUTO REFRESH
   useEffect(() => {
@@ -37,7 +44,7 @@ const Dashboard = () => {
         if (result.success) {
           const data = result.data;
 
-          // 🔥 6 SUMMARY CARDS - FILL LEVELS + BINS
+          // 🔥 6 SUMMARY CARDS - FILL LEVELS + BINS (NOW CLICKABLE)
           setStats(data.stats || {});
 
           // 🔥 ZONES - 100% BINS ONLY
@@ -123,47 +130,59 @@ const Dashboard = () => {
       />
 
       <div className="mt-4 space-y-3 overflow-y-auto h-full no-scrollbar">
-        {/* 🔥 SAME 6-CARD STRUCTURE - lg:grid-cols-6 */}
+        {/* 🔥 6-CARD STRUCTURE - NOW CLICKABLE WITH FILTER */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3">
           <SummaryCard
             status="0-50% Bins"
             value={stats.fillLevels?.zeroToFifty || 0}
             title="Low Fill Bins"
             icon={<TbTrashX size={20} />}
+            onClick={() => handleFilterClick("0-50")} // 🔥 FILTER 0-50%
+            clickable={true} // 🔥 Make clickable
           />
           <SummaryCard
             status="51-75% Bins"
             value={stats.fillLevels?.fiftyOneToSeventyFive || 0}
             title="Medium Fill Bins"
             icon={<TbTrashX size={20} />}
+            onClick={() => handleFilterClick("51-75")} // 🔥 FILTER 51-75%
+            clickable={true}
           />
           <SummaryCard
             status="76-99% Bins"
             value={stats.fillLevels?.seventySixToNinetyNine || 0}
             title="High Fill Bins"
             icon={<TbTrashX size={20} />}
+            onClick={() => handleFilterClick("76-99")} // 🔥 FILTER 76-99%
+            clickable={true}
           />
           <SummaryCard
             status="100% Bins"
             value={stats.fillLevels?.hundred || 0}
             title="Critical Bins"
             icon={<TbReportAnalytics size={21} />}
+            onClick={() => handleFilterClick("100")} // 🔥 FILTER 100%
+            clickable={true}
           />
           <SummaryCard
             status="InActive Bins"
             value={stats.bins?.inactiveBins || 0}
             title="InActive Bins"
             icon={<TbTrashX size={21} />}
+            onClick={() => handleFilterClick("inactive")} // 🔥 FILTER INACTIVE
+            clickable={true}
           />
           <SummaryCard
             title="Total Bins"
             value={stats.bins?.totalBins || 0}
             status="All Bins"
             icon={<TbReportAnalytics size={21} />}
+            onClick={() => handleFilterClick("all")} // 🔥 SHOW ALL BINS
+            clickable={true}
           />
         </div>
 
-        {/* 🔥 CHARTS + ZONE 100% BINS */}
+        {/* 🔥 REST OF YOUR DASHBOARD REMAINS SAME */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
           <DonutChart title="Monthly Zone Wise" data={Piechartdata} colors={Projectcolor} />
           <ChartTitle title="Today Waste Collection" data={Barchartdata} colors={Barcolors} />

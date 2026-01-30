@@ -24,11 +24,11 @@ const ViewEsclation = () => {
     { label: "Ward", value: user.ward },
     { label: "Zone", value: user.zone },
     // { label: "Engineer", value: user.engineer },
-    { label: "Escalation Level", value: user.filled },
-    { label: "Location", value: "Arappalayam" },
-    { label: "Last Alerted", value: "10.00 am" },
+    { label: "Escalation Level", value: user.visibleEscalations },
+    { label: "Location", value: user.location },
+    { label: "Duration Full", value: user.displayMins },
     // { label: "Bins", value: "5" },
-    { label: "Latest Photos", value: user.lastestphotos },
+    // { label: "Latest Photos", value: user.lastestphotos },
   ];
 
   return (
@@ -53,7 +53,7 @@ const ViewEsclation = () => {
                       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
                       <Marker position={[staticLat, staticLong]}>
-                        <Popup></Popup>
+                        
                       </Marker>
                     </MapContainer>
 
@@ -61,20 +61,7 @@ const ViewEsclation = () => {
                       {field.value}
                     </p>
                   </div>
-                ) : field.label === "Latest Photos" ? (
-                  <div className="flex gap-4 mt-2">
-                    <img
-                      src={bin1}
-                      alt="Bin Photo 1"
-                      className="w-25 h-25 object-cover rounded-lg shadow"
-                    />
-                    <img
-                      src={bin2}
-                      alt="Bin Photo 2"
-                      className="w-25 h-25 object-cover rounded-lg shadow"
-                    />
-                  </div>
-                ) : (
+                )  : (
                   <span
                     className={`text-sm ${
                       field.label === "Escalation Level" &&

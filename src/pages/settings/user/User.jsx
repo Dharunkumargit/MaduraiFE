@@ -77,6 +77,8 @@ const User = () => {
   return (
     <div>
       <Table
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
         title="Settings"
         sub_title="Users"
         pagetitle="User Role Assignment"

@@ -104,8 +104,8 @@ const Employeewisereport = () => {
                 <th className="border p-4">Assingnes Zone/Ward</th>
                 <th className="border p-4">Task Assingned</th>
                 <th className="border p-4">Task Completed</th>
-                <th className="border p-4">Average Cleaning Time</th>
-                <th className="border p-4">TAT Compliance (%)</th>
+                {/* <th className="border p-4">Average Cleaning Time</th>
+                <th className="border p-4">TAT Compliance (%)</th> */}
                 <th className="border p-4">No. of Escalations</th>
                 <th className="border p-4">
                   Total Garbage Collected (Tons)

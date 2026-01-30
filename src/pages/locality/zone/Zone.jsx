@@ -22,7 +22,7 @@ const Zone = () => {
       String(value).toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
-  const itemsPerPage = 8;
+  const itemsPerPage = 9;
   const getZones = async (page = 1) => {
     try {
       setLoading(true);
@@ -72,6 +72,8 @@ const Zone = () => {
   return (
     <div>
       <Table
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
         title="Master"
         sub_title="Zone"
         pagetitle="Zone"
