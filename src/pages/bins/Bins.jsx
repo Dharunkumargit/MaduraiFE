@@ -15,7 +15,6 @@ const Bins = () => {
 
   const [binData, setBinData] = useState([]);
   const [loading, setLoading] = useState(false);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
 
@@ -38,7 +37,7 @@ const Bins = () => {
     });
   };
 
-  // 🔹 FETCH BINS (SERVER PAGINATION)
+  // 🔹 FETCH BINS (SERVER SIDE SEARCH + PAGINATION)
   const fetchBins = async (page = 1) => {
     try {
       setLoading(true);
@@ -48,6 +47,7 @@ const Bins = () => {
           filter,
           page,
           limit: itemsPerPage,
+          search: searchTerm,
         },
       });
 
@@ -66,28 +66,20 @@ const Bins = () => {
     }
   };
 
-  // 🔹 FILTER CHANGE
+  // 🔹 FILTER OR SEARCH CHANGE
   useEffect(() => {
     setCurrentPage(1);
     fetchBins(1);
-  }, [filter]);
+  }, [filter, searchTerm]);
 
   // 🔹 PAGE CHANGE
   useEffect(() => {
     fetchBins(currentPage);
   }, [currentPage]);
 
-  // 🔹 SEARCH (CLIENT SIDE)
-  const filteredBins = binData.filter((bin) =>
-    Object.values(bin).some((value) =>
-      String(value).toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
-
   // 🔹 DELETE BIN
   const handleDeleteBin = async (id) => {
     if (!window.confirm("Are you sure?")) return;
-
     try {
       await axios.delete(`${API}/bins/deletebinbyid/${id}`);
       toast.success("Bin deleted");
@@ -101,7 +93,6 @@ const Bins = () => {
     { label: "Location ID", key: "binid" },
     { label: "Zone", key: "zone" },
     { label: "Ward", key: "ward" },
-    // { label: "Bin Type", key: "bintype" },
     { label: "Location", key: "location" },
     { label: "Filled%", key: "filled" },
     { label: "TCC", key: "totalClearedEvents" },
@@ -110,16 +101,16 @@ const Bins = () => {
   ];
 
   return (
-    <div className="">
+    <>
       <Table
         title="Bins"
         sub_title="Table"
         pagetitle="Bins"
         colomns={Columns}
-        tabledata={filteredBins}
-        loading={loading}
         itemsPerPage={itemsPerPage}
         currentPage={currentPage}
+        tabledata={binData}
+        loading={loading}
         addButtonLabel="Add New Bin"
         addButtonIcon={<HiOutlineTrash size={22} />}
         onDelete={handleDeleteBin}
@@ -143,7 +134,7 @@ const Bins = () => {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
       />
-    </div>
+    </>
   );
 };
 

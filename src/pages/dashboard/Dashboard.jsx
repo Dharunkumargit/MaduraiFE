@@ -28,7 +28,7 @@ const Dashboard = () => {
 
   // 🔥 FILTER NAVIGATION FUNCTION
   const handleFilterClick = (percentageRange) => {
-    navigate(`/bins?filter=${percentageRange}`);
+    navigate(`/location?filter=${percentageRange}`);
   };
 
   // 🔥 LIVE DATA FETCH - 30s AUTO REFRESH
@@ -217,79 +217,105 @@ const Dashboard = () => {
 
         {/* 🔥 TABLES - 100% BINS FOR WARDS TOO */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-          {/* 🔥 WARDS - 100% BINS ONLY (3 COLS) */}
-          <div className="bg-lightest-blue rounded-xl border-3 border-white h-74 font-roboto-flex">
-            <h2 className="text-base font-semibold p-4 text-black">Top Wards 100% Bins</h2>
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white rounded-lg shadow-xl overflow-hidden">
-                <thead>
-                  <tr className="bg-white text-center text-black font-bold border-b-3 border-light-blue text-sm">
-                    <th className="py-4 px-5 text-sm">S.No</th>
-                    <th className="py-4 px-5 text-sm">Ward</th>
-                    <th className="py-4 px-5 text-sm">100% Bins</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {wardsdata.map((bin, index) => (
-                    <tr key={index} className="text-light-grey border-b-2 border-light-blue last:border-none text-center text-sm">
-                      <td className="py-3 px-5 text-sm">{index + 1}</td>
-                      <td className="py-3 px-5 text-sm">{bin.ward}</td>
-                      <td className="py-3 px-5 text-sm font-bold text-red-600">{bin.fullBins}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+  {/* 🔥 WARDS */}
+  <div className="bg-lightest-blue rounded-xl border-3 border-white font-roboto-flex">
+    <h2 className="text-base font-semibold p-4 text-black">
+      Top Wards 100% Bins
+    </h2>
 
-          {/* 🔥 HOTSPOTS - SAME */}
-          <div className="bg-lightest-blue rounded-xl border-3 border-white h-74 font-roboto-flex">
-            <h2 className="text-base font-semibold p-4 text-black">Top 10 Hotspots</h2>
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white rounded-lg overflow-hidden">
-                <thead>
-                  <tr className="bg-white text-center text-black font-semibold border-b-3 border-light-blue text-sm">
-                    <th className="py-4 px-5 text-sm">S.No</th>
-                    <th className="py-4 px-5 text-sm">Location</th>
-                    <th className="py-4 px-5 text-sm">Waste Collected</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {hotspotdata.map((bin, index) => (
-                    <tr key={index} className="text-light-grey border-b-2 border-light-blue last:border-none text-center text-sm">
-                      <td className="py-3 px-5 text-sm">{index + 1}</td>
-                      <td className="py-3 px-5 text-sm">{bin.location}</td>
-                      <td className="py-3 px-5 text-sm">{bin.waste}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+    <div className="max-h-72 overflow-y-auto">
+      <table className="w-full table-fixed bg-white rounded-lg shadow-xl">
+        <thead>
+          <tr className="border-b-3 border-light-blue text-black text-sm">
+            <th className="py-3 px-2 sm:px-4 w-1/5">S.No</th>
+            <th className="py-3 px-2 sm:px-4 w-2/5">Ward</th>
+            <th className="py-3 px-2 sm:px-4 w-2/5">100% Bins</th>
+          </tr>
+        </thead>
 
-          {/* 🔥 L1-L4 ESCALATIONS */}
-          <div className="bg-lightest-blue rounded-xl border-3 border-white h-74">
-            <h2 className="text-base font-semibold p-4 text-black">Escalation L1-L4</h2>
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white rounded-lg overflow-hidden">
-                <thead>
-                  <tr className="bg-white text-center text-black font-semibold border-b-3 border-light-blue text-sm">
-                    <th className="py-4 px-5 text-sm">Level</th>
-                    <th className="py-4 px-5 text-sm">Count</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {escalationdata.map((bin, index) => (
-                    <tr key={index} className="text-light-grey border-b-2 border-light-blue last:border-none text-center text-sm">
-                      <td className="py-3 px-5 text-sm font-bold text-orange-600">{bin.level}</td>
-                      <td className="py-3 px-5 text-sm font-bold">{bin.count}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+        <tbody>
+          {wardsdata.map((bin, index) => (
+            <tr
+              key={index}
+              className="border-b-2 border-light-blue text-center text-sm text-light-grey last:border-none"
+            >
+              <td className="py-2 px-2">{index + 1}</td>
+              <td className="py-2 px-2 truncate">{bin.ward}</td>
+              <td className="py-2 px-2 font-bold text-red-600">
+                {bin.fullBins}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {/* 🔥 HOTSPOTS */}
+  <div className="bg-lightest-blue rounded-xl border-3 border-white font-roboto-flex">
+    <h2 className="text-base font-semibold p-4 text-black">
+      Top 10 Hotspots
+    </h2>
+
+    <div className="max-h-72 overflow-y-auto">
+      <table className="w-full table-fixed bg-white rounded-lg">
+        <thead>
+          <tr className="border-b-3 border-light-blue text-black text-sm">
+            <th className="py-3 px-2 sm:px-4 w-1/5">S.No</th>
+            <th className="py-3 px-2 sm:px-4 w-2/5">Location</th>
+            <th className="py-3 px-2 sm:px-4 w-2/5">Waste</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {hotspotdata.map((bin, index) => (
+            <tr
+              key={index}
+              className="border-b-2 border-light-blue text-center text-sm text-light-grey last:border-none"
+            >
+              <td className="py-2 px-2">{index + 1}</td>
+              <td className="py-2 px-2 truncate">{bin.location}</td>
+              <td className="py-2 px-2">{bin.waste}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {/* 🔥 ESCALATIONS */}
+  <div className="bg-lightest-blue rounded-xl border-3 border-white font-roboto-flex">
+    <h2 className="text-base font-semibold p-4 text-black">
+      Escalation L1–L4
+    </h2>
+
+    <div className="max-h-72 overflow-y-auto">
+      <table className="w-full table-fixed bg-white rounded-lg">
+        <thead>
+          <tr className="border-b-3 border-light-blue text-black text-sm">
+            <th className="py-3 px-2 sm:px-4 w-1/2">Level</th>
+            <th className="py-3 px-2 sm:px-4 w-1/2">Count</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {escalationdata.map((bin, index) => (
+            <tr
+              key={index}
+              className="border-b-2 border-light-blue text-center text-sm text-light-grey last:border-none"
+            >
+              <td className="py-2 px-2 font-bold text-orange-600">
+                {bin.level}
+              </td>
+              <td className="py-2 px-2 font-bold">{bin.count}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
       </div>
     </div>
   );

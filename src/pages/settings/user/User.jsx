@@ -1,49 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Table from "../../../components/Table";
 import { RiUserAddLine } from "react-icons/ri";
-import { Userdata } from "../../../components/Data";
 import AddUser from "./AddUser";
-import { useState, useEffect } from "react";
 import axios from "axios";
 import { API } from "../../../../const";
-import EditUser from "./EditUser";
 import { toast } from "react-toastify";
-import AddEmploye from "../../employeemanagement/AddEmploye";
 import Pagination from "../../../components/Pagination";
 import { useOutletContext } from "react-router";
 
 const User = () => {
-  const [employees, setEmployees] = useState([]); // ✅ Changed from users
+  const { searchTerm } = useOutletContext();
+
+  const [employees, setEmployees] = useState([]);        // paginated data
+  const [allEmployees, setAllEmployees] = useState([]);  // full data for search
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const { searchTerm } = useOutletContext();
 
-  const filteredEmployees = employees.filter((employee) =>
-    Object.values(employee).some((value) =>
-      String(value).toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
   const itemsPerPage = 8;
 
-  // ✅ ONE LINE FILTER - Role assigned BUT no role_id
+  // 🔹 EXISTING API CALL (UNCHANGED)
   const getEmployeesWithoutRoleId = async (page = 1) => {
     try {
       setLoading(true);
+
       const res = await axios.get(
-        `${API}/employee/getemployees?page=${page}&limit=${itemsPerPage}`,
+        `${API}/employee/getemployees?page=${page}&limit=${itemsPerPage}`
       );
 
-      // ✅ FIXED FILTER - Show employees NEEDING role assignment
+      // keep your existing logic exactly
       const filteredEmployees = res.data.data.filter(
-        (emp) =>
-          // Case 1: Has role_name but NO role_id (pending role_id assignment)
-          emp.role_name && emp.role_id,
+        (emp) => emp.role_name && emp.role_id
       );
 
-      console.log(`📊 Showing ${filteredEmployees.length} pending employees`);
       setEmployees(filteredEmployees);
-      setTotalItems(filteredEmployees.length);
+      setTotalItems(res.data.pagination.totalItems);
+      setCurrentPage(res.data.pagination.currentPage);
     } catch (error) {
       toast.error("Failed to load");
     } finally {
@@ -51,16 +43,65 @@ const User = () => {
     }
   };
 
-  useEffect(() => {
-    getEmployeesWithoutRoleId(currentPage);
-  }, [currentPage]);
+  // 🔹 FETCH ALL PAGES (ONLY FOR SEARCH)
+  const fetchAllEmployees = async () => {
+    try {
+      setLoading(true);
 
+      let page = 1;
+      let allData = [];
+      let totalPages = 1;
+
+      do {
+        const res = await axios.get(
+          `${API}/employee/getemployees?page=${page}&limit=${itemsPerPage}`
+        );
+
+        const filtered = res.data.data.filter(
+          (emp) => emp.role_name && emp.role_id
+        );
+
+        allData = [...allData, ...filtered];
+        totalPages = res.data.pagination.totalPages;
+        page++;
+      } while (page <= totalPages);
+
+      setAllEmployees(allData);
+      setTotalItems(allData.length);
+      setCurrentPage(1);
+    } catch (error) {
+      toast.error("Failed to load");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 🔹 SEARCH + PAGINATION HANDLING
+  useEffect(() => {
+    if (searchTerm) {
+      fetchAllEmployees();      // 🔥 search across ALL pages
+    } else {
+      getEmployeesWithoutRoleId(currentPage);
+    }
+  }, [searchTerm, currentPage]);
+
+  // 🔹 CLIENT-SIDE SEARCH (NOW WORKS ACROSS ALL PAGES)
+  const filteredEmployees = (searchTerm ? allEmployees : employees).filter(
+    (employee) =>
+      Object.values(employee).some((value) =>
+        String(value).toLowerCase().includes(searchTerm.toLowerCase())
+      )
+  );
+
+  // 🔹 DELETE (UNCHANGED)
   const handleDeleteEmployee = async (id) => {
     if (!window.confirm("Delete this employee?")) return;
     try {
       await axios.delete(`${API}/employee/deleteemployee/${id}`);
       toast.success("Employee deleted");
-      getEmployeesWithoutRoleId(currentPage); // Refresh
+      searchTerm
+        ? fetchAllEmployees()
+        : getEmployeesWithoutRoleId(currentPage);
     } catch (error) {
       toast.error("Delete failed");
     }
@@ -75,7 +116,7 @@ const User = () => {
   ];
 
   return (
-    <div>
+    <>
       <Table
         itemsPerPage={itemsPerPage}
         currentPage={currentPage}
@@ -93,7 +134,9 @@ const User = () => {
             {...props}
             onclose={() => {
               props.onclose();
-              getEmployeesWithoutRoleId();
+              searchTerm
+                ? fetchAllEmployees()
+                : getEmployeesWithoutRoleId(currentPage);
             }}
           />
         )}
@@ -101,7 +144,16 @@ const User = () => {
         editroutepoint="edituser"
         showViewButton={false}
       />
-    </div>
+
+      {!searchTerm && (
+        <Pagination
+          totalItems={totalItems}
+          itemsPerPage={itemsPerPage}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      )}
+    </>
   );
 };
 

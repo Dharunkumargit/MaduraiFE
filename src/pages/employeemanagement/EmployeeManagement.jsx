@@ -10,16 +10,12 @@ import { toast } from "react-toastify";
 import { useOutletContext } from "react-router";
 
 const EmployeeManagement = () => {
+  const { searchTerm } = useOutletContext();
+
   const [employees, setEmployees] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { searchTerm } = useOutletContext();
-  const filteredEmployees = employees.filter((employee) =>
-    Object.values(employee).some((value) =>
-      String(value).toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
 
   const itemsPerPage = 9;
 
@@ -32,14 +28,18 @@ const EmployeeManagement = () => {
     { label: "Status", key: "status" },
   ];
 
-  // ✅ FETCH EMPLOYEES
+  // ✅ FETCH EMPLOYEES (SERVER SEARCH + PAGINATION)
   const getEmployees = async (page = 1) => {
     try {
       setLoading(true);
 
-      const res = await axios.get(
-        `${API}/employee/getemployees?page=${page}&limit=${itemsPerPage}`
-      );
+      const res = await axios.get(`${API}/employee/getemployees`, {
+        params: {
+          page,
+          limit: itemsPerPage,
+          search: searchTerm, // ✅ IMPORTANT
+        },
+      });
 
       setEmployees(res.data.data);
       setTotalItems(res.data.pagination.totalItems);
@@ -51,6 +51,12 @@ const EmployeeManagement = () => {
       setLoading(false);
     }
   };
+
+  // 🔹 SEARCH OR PAGE CHANGE
+  useEffect(() => {
+    setCurrentPage(1);
+    getEmployees(1);
+  }, [searchTerm]);
 
   useEffect(() => {
     getEmployees(currentPage);
@@ -69,7 +75,6 @@ const EmployeeManagement = () => {
 
       toast.success("Employee deleted successfully");
 
-      // 🧠 If last item on page → go back
       if (employees.length === 1 && currentPage > 1) {
         setCurrentPage((prev) => prev - 1);
       } else {
@@ -81,15 +86,16 @@ const EmployeeManagement = () => {
   };
 
   return (
-    <div>
+    <>
       <Table
-        itemsPerPage={itemsPerPage}
-        currentPage={currentPage}
         title="Employee Management"
         sub_title="Table"
         pagetitle="Employee Management"
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
         colomns={Columns}
-        tabledata={filteredEmployees}
+        tabledata={employees} 
+        loading={loading}
         addButtonLabel="Add Employee"
         addButtonIcon={<LuContact size={22} />}
         AddModal={(modalProps) => (
@@ -102,7 +108,6 @@ const EmployeeManagement = () => {
           />
         )}
         showViewButton={false}
-        loading={loading}
         showDeleteButton={true}
         onDelete={handleDelete}
         EditModal={EditEmployee}
@@ -114,7 +119,7 @@ const EmployeeManagement = () => {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
       />
-    </div>
+    </>
   );
 };
 

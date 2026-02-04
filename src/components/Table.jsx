@@ -14,6 +14,8 @@ import autoTable from "jspdf-autotable";
 import { useNavigate } from "react-router";
 import Pagination from "./Pagination";
 import Loader from "./Loader";
+import axios from "axios";
+import { API } from "../../const";
 
 const Table = ({
   title,
@@ -37,6 +39,7 @@ const Table = ({
   loading = false,
   onDelete,
   editroutepoint,
+  onExportAll,
   onEdit,
   ViewModel,
   routepoint,
@@ -72,66 +75,51 @@ const Table = ({
     }
     setSortConfig({ key, direction });
   };
-  const handleExportExcel = () => {
-    if (!sortedItems.length) return;
+  const fetchAllDataForExport = async () => {
+  const res = await axios.get(`${API}/bins/getallbins`, {
+    params: { export: true },
+  });
+  return res.data.data || [];
+};
+  const handleExportExcel = async () => {
+  const allData = await fetchAllDataForExport();
+  if (!allData.length) return;
 
-    const excelData = sortedItems.map((item) => {
-      const row = {};
-      colomns.forEach((col) => {
-        row[col.label] = item[col.key] ?? "-";
-      });
-      return row;
+  const excelData = allData.map((item) => {
+    const row = {};
+    colomns.forEach((col) => {
+      row[col.label] = item[col.key] ?? "-";
     });
+    return row;
+  });
 
-    const worksheet = XLSX.utils.json_to_sheet(excelData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, title || "Table Data");
+  const ws = XLSX.utils.json_to_sheet(excelData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, title || "Bins");
 
-    XLSX.writeFile(workbook, `${title || "table-data"}.xlsx`);
-  };
+  XLSX.writeFile(wb, `${title || "bins"}.xlsx`);
+};
+  const handleExportPDF = async () => {
+  const allData = await fetchAllDataForExport();
+  if (!allData.length) return;
 
-  const handleExportPDF = () => {
-  if (!sortedItems.length) {
-    alert("No data to export");
-    return;
-  }
+  const doc = new jsPDF("l", "mm", "a4");
 
-  try {
-    const doc = new jsPDF({
-       // 🔥 REQUIRED for bins
-      unit: "mm",
-      format: "a4",
-    });
+  const headers = colomns.map((c) => c.label);
+  const body = allData.map((row) =>
+    colomns.map((c) => row[c.key] ?? "-")
+  );
 
-    const headers = colomns.map((col) => col.label);
+  doc.text(title || "Bins", 14, 10);
 
-    const body = sortedItems.map((item) =>
-      colomns.map((col) => item[col.key] ?? "-")
-    );
+  autoTable(doc, {
+    head: [headers],
+    body,
+    startY: 15,
+    styles: { fontSize: 7 },
+  });
 
-    doc.setFontSize(14);
-    doc.text(title || "Table Data", 14, 15);
-
-    autoTable(doc, {
-      head: [headers],
-      body,
-      startY: 22,
-      styles: {
-        fontSize: 8,
-        cellPadding: 2,
-      },
-      headStyles: {
-        fillColor: [52, 152, 219],
-        textColor: 255,
-      },
-      theme: "grid",
-    });
-
-    doc.save(`${title || "table-data"}.pdf`);
-  } catch (error) {
-    console.error("PDF Export Error:", error);
-    alert("PDF export failed. Check console.");
-  }
+  doc.save(`${title || "bins"}.pdf`);
 };
 
   return (
