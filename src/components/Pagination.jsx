@@ -72,7 +72,7 @@ const Pagination = ({
             className={`px-3 py-1 rounded-md text-sm transition ${
               currentPage === page
                 ? "bg-black text-white font-semibold"
-                : "text-yellow-600 hover:bg-yellow-100"
+                : "text-black hover:bg-grey-500"
             }`}
           >
             {page}
